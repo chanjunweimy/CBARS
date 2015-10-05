@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="commons-math3-3.5">
+    <archive path="D:/Developer/Java/AudioDemo/lib/commons-math3-3.5.jar" />
+  </library>
+  <library name="algs4">
+    <archive path="D:/Developer/Java/Algorithm4/algs4.jar" />
+    <archive path="D:/Developer/Java/Algorithm4/stdlib.jar" />
+  </library>
+  <library name="algs4">
+    <archive path="D:/Developer/Java/Algorithm4/algs4.jar" />
+    <archive path="D:/Developer/Java/Algorithm4/stdlib.jar" />
+  </library>
+  <library name="catalina-6.0.20">
+    <archive path="D:/wangxiang/aboutme/catalina-6.0.20.jar" />
+  </library>
+  <library name="gdata-core-1.0">
+    <archive path="D:/wangxiang/aboutme/gdata-src.java-1.47.1/gdata/java/lib/gdata-core-1.0.jar" />
+  </library>
+  <library name="gdata-core-1.01">
+    <archive path="D:/wangxiang/aboutme/gdata-src.java-1.47.1/gdata/java/lib/gdata-core-1.0.jar" />
+  </library>
+  <library name="java-json">
+    <archive path="D:/MTL/jar/java-json.jar" />
+  </library>
+  <library name="jsoup-1.8.2">
+    <archive path="D:/wangxiang/aboutme/jsoup-1.8.2.jar" />
+  </library>
+  <library name="libs">
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/sac-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/bsh-1.3.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jna-4.1.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/gson-2.3.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/guava-18.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xalan-2.7.2.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/testng-6.8.5.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/htmlunit-2.17.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-io-2.4.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpcore-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpmime-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/junit-dep-4.11.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jcommander-1.29.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/nekohtml-1.9.22.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xml-apis-1.4.01.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-exec-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/cssparser-0.9.16.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpclient-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/serializer-2.7.2.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/apache-mime4j-0.6.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/cglib-nodep-2.1_3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-lang3-3.4.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/hamcrest-core-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/netty-3.5.7.Final.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xercesImpl-2.11.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-codec-1.10.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jna-platform-4.1.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/hamcrest-library-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-logging-1.1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/htmlunit-core-js-2.17.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/phantomjsdriver-1.2.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-collections-3.2.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jetty-io-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jetty-util-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-api-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-client-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-common-9.2.11.v20150529.jar" />
+  </library>
+  <library name="libs1">
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/sac-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/bsh-1.3.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jna-4.1.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/gson-2.3.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/guava-18.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xalan-2.7.2.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/testng-6.8.5.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/htmlunit-2.17.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-io-2.4.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpcore-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpmime-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/junit-dep-4.11.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jcommander-1.29.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/nekohtml-1.9.22.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xml-apis-1.4.01.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-exec-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/cssparser-0.9.16.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/httpclient-4.4.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/serializer-2.7.2.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/apache-mime4j-0.6.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/cglib-nodep-2.1_3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-lang3-3.4.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/hamcrest-core-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/netty-3.5.7.Final.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/xercesImpl-2.11.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-codec-1.10.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jna-platform-4.1.0.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/hamcrest-library-1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-logging-1.1.3.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/htmlunit-core-js-2.17.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/phantomjsdriver-1.2.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/commons-collections-3.2.1.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jetty-io-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/jetty-util-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-api-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-client-9.2.11.v20150529.jar" />
+    <archive path="D:/wangxiang/aboutme/selenium-java-2.46.0/selenium-2.46.0/libs/websocket-common-9.2.11.v20150529.jar" />
+  </library>
+  <library name="log4j-api-2.3">
+    <archive path="D:/MTL/Demo/lib/log4j-api-2.3.jar" />
+    <archive path="D:/MTL/Demo/lib/log4j-core-2.3.jar" />
+  </library>
+  <library name="mysql-connector-java-5.0.8-bin">
+    <archive path="D:/MTL/Demo/lib/mysql-connector-java-5.0.8-bin.jar" />
+  </library>
+  <library name="oauth-signature-1.9">
+    <archive path="D:/wangxiang/aboutme/oauth-signature-1.9.jar/oauth-signature-1.9.jar" />
+  </library>
+  <library name="scala-sdk-2.11.7">
+    <archive path="C:/Users/workshop/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.7.jar" />
+    <archive path="C:/Users/workshop/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.7.jar" />
+  </library>
+  <library name="selenium-java-2.46.0-srcs">
+    <archive path="D:/MTL/Demo/lib/selenium-java-2.46.0.jar" />
+    <archive path="D:/MTL/Demo" />
+  </library>
+  <library name="tmt-0.4.0">
+    <archive path="D:/wangxiang/aboutme/tmt-0.4.0.jar" />
+  </library>
+  <library name="tomcat-catalina-7.0.27">
+    <archive path="D:/wangxiang/aboutme/tomcat-catalina-7.0.27.jar" />
+  </library>
+  <library name="twitter4j-stream-4.0.4">
+    <archive path="D:/MTL/Demo/lib/twitter4j-stream-4.0.4.jar" />
+    <archive path="D:/MTL/Demo/lib/twitter4j-media-support-4.0.4.jar" />
+    <archive path="D:/MTL/Demo/lib/twitter4j-examples-4.0.4.jar" />
+    <archive path="D:/MTL/Demo/lib/twitter4j-core-4.0.4.jar" />
+    <archive path="D:/MTL/Demo/lib/twitter4j-async-4.0.4.jar" />
+  </library>
+</eclipse-userlibraries>
+
