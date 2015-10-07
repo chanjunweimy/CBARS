@@ -4,6 +4,7 @@ import Feature.MagnitudeSpectrum;
 import Feature.ZeroCrossing;
 import SignalProcess.WaveIO;
 import Distance.Bhattacharyya;
+import Distance.Chebychev;
 import Distance.CityBlock;
 import Distance.Cosine;
 import Distance.Euclidean;
@@ -58,11 +59,15 @@ public class FeatureExtraction {
         
         Bhattacharyya bhat = new Bhattacharyya();
         double bb = bhat.getDistance(msFeature1, msFeature2);
+        
+        Chebychev cheby = new Chebychev();
+        double ch = cheby.getDistance(msFeature1, msFeature2);
 
         System.out.println(ss);
         System.out.println(ee);
         System.out.println(cc);
         //System.out.println(mm);
         System.out.println(bb);
+        System.out.println(ch);
     }
 }
