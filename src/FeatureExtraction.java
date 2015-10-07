@@ -3,9 +3,11 @@ import Feature.MFCC;
 import Feature.MagnitudeSpectrum;
 import Feature.ZeroCrossing;
 import SignalProcess.WaveIO;
+import Distance.Bhattacharyya;
 import Distance.CityBlock;
 import Distance.Cosine;
 import Distance.Euclidean;
+import Distance.Mahalanobis;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -50,9 +52,17 @@ public class FeatureExtraction {
 
         CityBlock cityBlock = new CityBlock();
         double cc = cityBlock.getDistance(msFeature1, msFeature2);
+        
+        //Mahalanobis mahalanobis = new Mahalanobis();
+        //double mm = mahalanobis.getDistance(msFeature1, msFeature2, MFCC);
+        
+        Bhattacharyya bhat = new Bhattacharyya();
+        double bb = bhat.getDistance(msFeature1, msFeature2);
 
         System.out.println(ss);
         System.out.println(ee);
         System.out.println(cc);
+        //System.out.println(mm);
+        System.out.println(bb);
     }
 }

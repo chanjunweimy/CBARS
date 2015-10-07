@@ -7,10 +7,13 @@ public class Cosine {
 
     public double getDistance(double[] query1, double[] query2){
         if (query1.length != query2.length){
-            System.err.println("The dimension of the two vectors does not match!");
+            System.err.println("Cosine: The dimension of the two vectors does not match!");
 
             System.exit(1);
         }
+        
+        
+        //cosine similarity = sigma(xi * yi) / ( ||X|| * ||Y|| )
 
         double dotProduct = 0.0;
         double magnitude1 = 0.0;
@@ -32,6 +35,8 @@ public class Cosine {
             similarity = 0.0;
         }
 
-        return -similarity;
+        //change from -similarity to 1 - similarity
+        //isn't distance = 1 - similarity?
+        return 1 - similarity;
     }
 }
