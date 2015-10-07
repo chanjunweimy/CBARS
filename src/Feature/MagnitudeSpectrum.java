@@ -2,8 +2,6 @@ package Feature;
 
 import SignalProcess.Frames;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -44,11 +42,11 @@ public class MagnitudeSpectrum {
         double magSpectrum[] = new double[frameLength];
 
         //calculate FFT for current frame;
-        fftProcess.computeFFT(iFrame);
+        FFTProcess.computeFFT(iFrame);
 
         //calculate magnitude spectrum;
         for (int k = 0; k < frameLength; k++){
-            magSpectrum[k] = Math.pow(fftProcess.real[k]*fftProcess.real[k] + fftProcess.imag[k]*fftProcess.imag[k], 0.5);
+            magSpectrum[k] = Math.pow(FFTProcess.real[k]*FFTProcess.real[k] + FFTProcess.imag[k]*FFTProcess.imag[k], 0.5);
         }
 
         return magSpectrum;
