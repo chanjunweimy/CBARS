@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * Created by workshop on 9/18/2015.
