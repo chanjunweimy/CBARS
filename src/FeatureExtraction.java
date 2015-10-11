@@ -8,7 +8,7 @@ import Distance.Chebychev;
 import Distance.CityBlock;
 import Distance.Cosine;
 import Distance.Euclidean;
-import Distance.Mahalanobis;
+import Distance.RBFKernel;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -54,6 +54,15 @@ public class FeatureExtraction {
         CityBlock cityBlock = new CityBlock();
         double cc = cityBlock.getDistance(msFeature1, msFeature2);
         
+        /**
+         * not using mahalanobis distance as the 
+         * inverse of covariance matrix is quite hard to implement
+         * 
+         * since mahalanobis distance assume the samples are all distributed
+         * about the centre of mass, it might not be so suitable for
+         * Feature extraction of speech, so this is another reason why we
+         * don't implement it.
+         */
         //Mahalanobis mahalanobis = new Mahalanobis();
         //double mm = mahalanobis.getDistance(msFeature1, msFeature2, MFCC);
         
@@ -62,6 +71,9 @@ public class FeatureExtraction {
         
         Chebychev cheby = new Chebychev();
         double ch = cheby.getDistance(msFeature1, msFeature2);
+        
+        RBFKernel kernel = new RBFKernel();
+        double rbf = kernel.getDistance(msFeature1, msFeature2);
 
         System.out.println(ss);
         System.out.println(ee);
@@ -69,5 +81,6 @@ public class FeatureExtraction {
         //System.out.println(mm);
         System.out.println(bb);
         System.out.println(ch);
+        System.out.println(rbf);
     }
 }

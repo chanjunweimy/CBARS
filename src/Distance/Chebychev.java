@@ -10,7 +10,7 @@ public class Chebychev {
         
         double distance = 0.0;
 
-		int N = query1.length;
+		int N = query1.length;		
         for(int i = 0; i < N; i++) {
         	double dif = Math.abs(query1[i] - query2[i]);
         	distance = Math.max(dif, distance);

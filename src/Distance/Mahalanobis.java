@@ -9,7 +9,6 @@ import org.apache.commons.math3.stat.correlation.Covariance;
  * Don't know how to get the covariance matrix
  * 
  * @author Jun
- *
  */
 public class Mahalanobis {
 
