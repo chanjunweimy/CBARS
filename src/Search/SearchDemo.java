@@ -1,6 +1,9 @@
 package Search;
 
+import Feature.Energy;
+import Feature.MFCC;
 import Feature.MagnitudeSpectrum;
+import Feature.ZeroCrossing;
 import SignalProcess.WaveIO;
 import Distance.Cosine;
 import Tool.SortHashMapByValue;
@@ -18,14 +21,36 @@ public class SearchDemo {
     /**
      * Please replace the 'trainPath' with the specific path of train set in your PC.
      */
-    protected final static String trainPath = "D:/Developer/Java/AudioData/Environment_Sound/Environment Sound/";
+    protected final static String trainPath = "data/input/train";
 
+    private HashMap<String, double[]> _audioEnergy = null;
+    private HashMap<String, double[]> _audioMfcc = null;
+    private HashMap<String, double[]> _audioSpectrum = null;
+    private HashMap<String, double[]> _audioZeroCrossing = null;
+    private HashMap<String, double[]> _emotionEnergy = null;
+    private HashMap<String, double[]> _emotionMfcc = null;
+    private HashMap<String, double[]> _emotionSpectrum = null;
+    private HashMap<String, double[]> _emotionZeroCrossing = null;
+
+    public SearchDemo() {
+    	_audioEnergy = readFeature("data/feature/audio_energy.txt");
+    	_audioMfcc = readFeature("data/feature/audio_mfcc.txt");
+    	_audioSpectrum = readFeature("data/feature/audio_spectrum.txt");
+    	_audioZeroCrossing = readFeature("data/feature/audio_zerocrossing.txt");
+    	_emotionEnergy = readFeature("data/feature/emotion_energy.txt");
+    	_emotionMfcc = readFeature("data/feature/emotion_mfcc.txt");
+    	_emotionSpectrum = readFeature("data/feature/emotion_spectrum.txt");
+    	_emotionZeroCrossing = readFeature("data/feature/emotion_zerocrossing.txt");
+    }
 
     /***
      * Get the feature of train set via the specific feature extraction method, and write it into offline file for efficiency;
      * Please modify this function, select or combine the methods (in the Package named 'Feature') to extract feature, such as Zero-Crossing, Energy, Magnitude-
      * Spectrum and MFCC by yourself.
      * @return the map of training features, Key is the name of file, Value is the array/vector of features.
+     * 
+     * This method has been deprecated as there is a later method defined in AudioFeaturesGenerator.java
+     * @deprecated
      */
     public HashMap<String,double[]> trainFeatureList(){
         File trainFolder = new File(trainPath);
@@ -82,7 +107,153 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultList(String query){
+    public ArrayList<String> resultListOfEnergy(String query, boolean isAudio){
+        WaveIO waveIO = new WaveIO();
+
+        short[] inputSignal = waveIO.readWave(query);
+        Energy ms = new Energy();
+        double[] msFeature1 = ms.getFeature(inputSignal);
+        HashMap<String, Double> simList = new HashMap<String, Double>();
+
+        /**
+         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
+         */
+        Cosine cosine = new Cosine();
+
+        /**
+         * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
+         */
+        HashMap<String, double[]> trainFeatureList = null;
+        
+        if (isAudio) {
+        	trainFeatureList = _audioEnergy;
+        } else {
+        	trainFeatureList = _emotionEnergy;
+        }
+
+//        System.out.println(trainFeatureList.size() + "=====");
+        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        }
+
+        SortHashMapByValue sortHM = new SortHashMapByValue(20);
+        ArrayList<String> result = sortHM.sort(simList);
+
+        String out = query + ":";
+        for(int j = 0; j < result.size(); j++){
+            out += "\t" + result.get(j);
+        }
+
+        System.out.println(out);
+        return result;
+    }
+    
+    /***
+     * Get the distances between features of the selected query audio and ones of the train set;
+     * Please modify this function, select or combine the suitable and feasible methods (in the package named 'Distance') to calculate the distance,
+     * such as CityBlock, Cosine and Euclidean by yourself.
+     * @param query the selected query audio file;
+     * @return the top 20 similar audio files;
+     */
+    public ArrayList<String> resultListOfMfcc(String query, boolean isAudio){
+        WaveIO waveIO = new WaveIO();
+
+        short[] inputSignal = waveIO.readWave(query);
+        MFCC ms = new MFCC();
+        ms.process(inputSignal);
+        double[] msFeature1 = ms.getMeanFeature();
+        HashMap<String, Double> simList = new HashMap<String, Double>();
+
+        /**
+         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
+         */
+        Cosine cosine = new Cosine();
+
+        /**
+         * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
+         */
+        HashMap<String, double[]> trainFeatureList = null;
+        
+        if (isAudio) {
+        	trainFeatureList = _audioMfcc;
+        } else {
+        	trainFeatureList = _emotionMfcc;
+        }
+
+//        System.out.println(trainFeatureList.size() + "=====");
+        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        }
+
+        SortHashMapByValue sortHM = new SortHashMapByValue(20);
+        ArrayList<String> result = sortHM.sort(simList);
+
+        String out = query + ":";
+        for(int j = 0; j < result.size(); j++){
+            out += "\t" + result.get(j);
+        }
+
+        System.out.println(out);
+        return result;
+    }
+    
+    
+    /***
+     * Get the distances between features of the selected query audio and ones of the train set;
+     * Please modify this function, select or combine the suitable and feasible methods (in the package named 'Distance') to calculate the distance,
+     * such as CityBlock, Cosine and Euclidean by yourself.
+     * @param query the selected query audio file;
+     * @return the top 20 similar audio files;
+     */
+    public ArrayList<String> resultListOfZeroCrossing(String query, boolean isAudio){
+        WaveIO waveIO = new WaveIO();
+
+        short[] inputSignal = waveIO.readWave(query);
+        ZeroCrossing ms = new ZeroCrossing();
+        double[] msFeature1 = ms.getFeature(inputSignal);
+        HashMap<String, Double> simList = new HashMap<String, Double>();
+
+        /**
+         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
+         */
+        Cosine cosine = new Cosine();
+
+        /**
+         * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
+         */
+        HashMap<String, double[]> trainFeatureList = null;
+        
+        if (isAudio) {
+        	trainFeatureList = _audioZeroCrossing;
+        } else {
+        	trainFeatureList = _emotionZeroCrossing;
+        }
+
+//        System.out.println(trainFeatureList.size() + "=====");
+        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        }
+
+        SortHashMapByValue sortHM = new SortHashMapByValue(20);
+        ArrayList<String> result = sortHM.sort(simList);
+
+        String out = query + ":";
+        for(int j = 0; j < result.size(); j++){
+            out += "\t" + result.get(j);
+        }
+
+        System.out.println(out);
+        return result;
+    }
+    
+    /***
+     * Get the distances between features of the selected query audio and ones of the train set;
+     * Please modify this function, select or combine the suitable and feasible methods (in the package named 'Distance') to calculate the distance,
+     * such as CityBlock, Cosine and Euclidean by yourself.
+     * @param query the selected query audio file;
+     * @return the top 20 similar audio files;
+     */
+    public ArrayList<String> resultListOfSpectrum(String query, boolean isAudio){
         WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
@@ -98,10 +269,16 @@ public class SearchDemo {
         /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
-        HashMap<String, double[]> trainFeatureList = readFeature("data/feature/allFeature.txt");
+        HashMap<String, double[]> trainFeatureList = null;
+        
+        if (isAudio) {
+        	trainFeatureList = _audioSpectrum;
+        } else {
+        	trainFeatureList = _emotionSpectrum;
+        }
 
 //        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry f: trainFeatureList.entrySet()){
+        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
             simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
         }
 
@@ -116,6 +293,8 @@ public class SearchDemo {
         System.out.println(out);
         return result;
     }
+    
+    
 
     /**
      * Load the offline file of features (the result of function 'trainFeatureList()');
@@ -143,7 +322,7 @@ public class SearchDemo {
 
                 line = br.readLine();
             }
-
+            br.close();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -156,6 +335,6 @@ public class SearchDemo {
         /**
          * Example of searching, selecting 'bus2.wav' as query;
          */
-        searchDemo.resultList("data/input/test/bus2.wav");
+        searchDemo.resultListOfSpectrum("data/input/test/bus2.wav", true);
     }
 }
