@@ -15,19 +15,21 @@ public class Precision {
         int truePositive = 0;
 
         for (int i = 0; i < _tags.length; i++) {
+        	fileName = fileName.trim().toLowerCase();
             if (fileName.contains(_tags[i])) {
                 tag = _tags[i];
             }
         }
-
+        
         for (int i = 0; i < generatedResults.length; i++) {
+        	generatedResults[i] = generatedResults[i].trim().toLowerCase();
             if (generatedResults[i].contains(tag)) {
                 truePositive++;
             }
         }
-    	
+    	        
         int falsePositive = generatedResults.length - truePositive;
-        double precision = truePositive / (truePositive + falsePositive);
+        double precision = (double) truePositive / (double) (truePositive + falsePositive);
 
         return precision;
 	}

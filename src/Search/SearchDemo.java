@@ -33,14 +33,7 @@ public class SearchDemo {
     private HashMap<String, double[]> _emotionZeroCrossing = null;
 
     public SearchDemo() {
-    	_audioEnergy = readFeature("data/feature/audio_energy.txt");
-    	_audioMfcc = readFeature("data/feature/audio_mfcc.txt");
-    	_audioSpectrum = readFeature("data/feature/audio_spectrum.txt");
-    	_audioZeroCrossing = readFeature("data/feature/audio_zerocrossing.txt");
-    	_emotionEnergy = readFeature("data/feature/emotion_energy.txt");
-    	_emotionMfcc = readFeature("data/feature/emotion_mfcc.txt");
-    	_emotionSpectrum = readFeature("data/feature/emotion_spectrum.txt");
-    	_emotionZeroCrossing = readFeature("data/feature/emotion_zerocrossing.txt");
+
     }
 
     /***
@@ -108,6 +101,11 @@ public class SearchDemo {
      * @return the top 20 similar audio files;
      */
     public ArrayList<String> resultListOfEnergy(String query, boolean isAudio){
+    	if (_audioEnergy == null) {
+        	_audioEnergy = readFeature("data/feature/audio_energy.txt");
+        	_emotionEnergy = readFeature("data/feature/emotion_energy.txt");
+    	}
+    	
         WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
@@ -156,7 +154,12 @@ public class SearchDemo {
      * @return the top 20 similar audio files;
      */
     public ArrayList<String> resultListOfMfcc(String query, boolean isAudio){
-        WaveIO waveIO = new WaveIO();
+        if (_audioMfcc == null) {
+        	_audioMfcc = readFeature("data/feature/audio_mfcc.txt");
+        	_emotionMfcc = readFeature("data/feature/emotion_mfcc.txt");
+        }
+    	
+    	WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
         MFCC ms = new MFCC();
@@ -206,6 +209,11 @@ public class SearchDemo {
      * @return the top 20 similar audio files;
      */
     public ArrayList<String> resultListOfZeroCrossing(String query, boolean isAudio){
+    	if (_audioZeroCrossing == null) {
+        	_audioZeroCrossing = readFeature("data/feature/audio_zerocrossing.txt");
+        	_emotionZeroCrossing = readFeature("data/feature/emotion_zerocrossing.txt");
+    	}
+    	
         WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
@@ -254,6 +262,11 @@ public class SearchDemo {
      * @return the top 20 similar audio files;
      */
     public ArrayList<String> resultListOfSpectrum(String query, boolean isAudio){
+    	if (_audioSpectrum == null) {
+        	_audioSpectrum = readFeature("data/feature/audio_spectrum.txt");
+        	_emotionSpectrum = readFeature("data/feature/emotion_spectrum.txt");
+    	}
+    	
         WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
@@ -309,8 +322,8 @@ public class SearchDemo {
 
             String line = br.readLine();
             while(line != null){
-
-                String[] split = line.trim().split("\t");
+            	line = line.replaceAll("\\s", " ");
+                String[] split = line.trim().split(" ");
                 if (split.length < 2)
                     continue;
                 double[] fs = new double[split.length - 1];

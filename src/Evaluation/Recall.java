@@ -58,7 +58,7 @@ public class Recall {
         }
         
         int falseNegative = nameToFreq.get(tag) - truePositive;
-        double recall = truePositive / (truePositive + falseNegative);
+        double recall = (double) truePositive / (double) (truePositive + falseNegative);
         
         return recall;
     }

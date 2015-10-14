@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
+import Search.SearchDemo;
 import Tool.Stats;
 
 public class EvaluationFacade {
@@ -51,7 +53,7 @@ public class EvaluationFacade {
 		return true;
 	}
 
-	public boolean evaluateTest(String testFiles[],
+	public boolean evaluateTest(File[] testFiles,
 			ArrayList<String[]> generatedResults, String resultFile,
 			String resultFileHeader, boolean isAudio) {
 		writeToFile(resultFile, false, resultFileHeader);
@@ -64,7 +66,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			lineBuffer.setLength(0);
-			String testFile = testFiles[i];
+			String testFile = testFiles[i].getAbsolutePath();
 			String[] generatedResult = generatedResults.get(i);
 
 			if (isAudio) {
@@ -87,7 +89,11 @@ public class EvaluationFacade {
 			lineBuffer.append(" map: ");
 			lineBuffer.append(maps[i]);
 			lineBuffer.append(" resultList: ");
-			lineBuffer.append(generatedResult.toString());
+			for (int j = 0; j < generatedResult.length; j++) {
+				lineBuffer.append(generatedResult[j]);
+				lineBuffer.append(" ");
+			}
+			lineBuffer.append("\n");
 
 			if (!writeToFile(resultFile, true, lineBuffer.toString())) {
 				return false;
@@ -113,8 +119,32 @@ public class EvaluationFacade {
 		lineBuffer.append(avgMapAtN);
 		lineBuffer.append(" (variance) ");
 		lineBuffer.append(varMapAtN);
+		lineBuffer.append("\n");
 		return writeToFile(resultFile, true, lineBuffer.toString());
 	}
 
+	
+	public static void main (String[] args) {
+		//File audioTestDir = new File(FILEPATH_AUDIO_TEST);
+		
+		SearchDemo search = new SearchDemo();
+		
+		File emotionTestDir = new File(FILEPATH_EMOTION_TEST);
+		File[] emotionTestFiles = emotionTestDir.listFiles();
+		ArrayList<String[]> generatedResults = new ArrayList<String[]>();
+		
+		for (int i = 0; i < emotionTestFiles.length; i++) {
+			String filename = emotionTestFiles[i].getAbsolutePath();
+			ArrayList <String> generatedList = search.resultListOfMfcc(filename, false);
+			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
+			generatedResults.add(generatedResult);
+		}
+		String resultFile = "result.txt";
+		String resultFileHeader = "###Emotion Test Result####\n";
+		boolean isAudio = false;
+		
+		EvaluationFacade evaluation = new EvaluationFacade();
+		evaluation.evaluateTest(emotionTestFiles, generatedResults, resultFile, resultFileHeader, isAudio);
+	}
 	
 }
