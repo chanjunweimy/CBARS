@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+
 import javax.swing.*;
 
 /**
@@ -56,10 +57,14 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         searchButton = new JButton("Search");
         searchButton.addActionListener(this);
 
+        SimpleSoundCapture ssc = new SimpleSoundCapture();
+		ssc.open();
+        
         JPanel queryPanel = new JPanel();
         queryPanel.add(openButton);
         queryPanel.add(queryButton);
         queryPanel.add(searchButton);
+        queryPanel.add(ssc);
 
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridLayout(0, 4, 60, 60));

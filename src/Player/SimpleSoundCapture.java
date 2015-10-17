@@ -49,7 +49,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -64,6 +66,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import Search.SearchDemo;
 
 /**
  * SimpleSoundCapture Example. This is a simple program to record sounds and
@@ -85,21 +89,23 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 	 */
 	private static final long serialVersionUID = -4414368244275539603L;
 
-	final int bufSize = 16384;
+	private final int bufSize = 16384;
 
-	Capture capture = new Capture();
+	private final String FILE_CAPTURED_NAME = "emotion.wav";
 
-	Playback playback = new Playback();
+	private Capture capture = new Capture();
 
-	AudioInputStream audioInputStream;
+	private Playback playback = new Playback();
 
-	JButton playB, captB;
+	private AudioInputStream audioInputStream;
 
-	JTextField textField;
+	private JButton playB, captB, _classifyEmotion;
 
-	String errStr;
+	private JTextField _textField;
 
-	double duration, seconds;
+	private String errStr;
+
+	protected double duration, seconds;
 
 	File file;
 
@@ -116,11 +122,13 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		p2.setBorder(sbb);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 
-		JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setBorder(new EmptyBorder(10, 0, 5, 0));
-		playB = addButton("Play", buttonsPanel, false);
-		captB = addButton("Record", buttonsPanel, true);
-		p2.add(buttonsPanel);
+		JPanel panel = new JPanel();
+		panel.setBorder(new EmptyBorder(10, 0, 5, 0));
+		playB = addButton("Play", panel, false);
+		captB = addButton("Record", panel, true);
+		_classifyEmotion = addButton("Classify", panel, false);
+		_textField = addTextField(panel, false);
+		p2.add(panel);
 
 		p1.add(p2);
 		add(p1);
@@ -145,6 +153,15 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		p.add(b);
 		return b;
 	}
+	
+	private JTextField addTextField(JPanel p, boolean state) {
+		JTextField b = new JTextField();
+		//b.addActionListener(this);
+		b.setVisible(state);
+		b.setEditable(false);
+		p.add(b);
+		return b;
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
@@ -162,13 +179,25 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 			if (captB.getText().startsWith("Record")) {
 				capture.start();
 				playB.setEnabled(false);
+				_classifyEmotion.setEnabled(false);
 				captB.setText("Stop");
 			} else {
 				capture.stop();
 				captB.setText("Record");
 				playB.setEnabled(true);
+				_classifyEmotion.setEnabled(true);
 			}
 
+		} else if (obj.equals(_classifyEmotion)) {
+			File queryAudio = new File(FILE_CAPTURED_NAME);
+
+            SearchDemo searchDemo = new SearchDemo();
+            
+            ArrayList<String> resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), false);
+
+            for (int i = 0; i < resultFiles.size(); i ++){
+                
+            }
 		}
 	}
 
@@ -204,7 +233,7 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		}
 
 		public void run() {
-
+			
 			// make sure we have something to play
 			if (audioInputStream == null) {
 				shutDown("No loaded audio to play back");
@@ -300,7 +329,7 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 	 * Reads data from the input channel and writes to the output stream
 	 */
 	class Capture implements Runnable {
-
+	
 		TargetDataLine line;
 
 		Thread thread;
@@ -315,6 +344,24 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		public void stop() {
 			thread = null;
 		}
+		
+	   private void saveAudio(byte[] audio, AudioFormat audioFormat){
+
+	        File outputFile = new File(FILE_CAPTURED_NAME);
+	        try {
+	        	AudioFileFormat.Type targetFileType = AudioFileFormat.Type.WAVE;
+	        	
+                ByteArrayInputStream bais = new ByteArrayInputStream(audio);
+                AudioInputStream outputAIS = new AudioInputStream(bais, audioFormat,
+                		audio.length / audioFormat.getFrameSize());
+
+                AudioSystem.write(outputAIS, targetFileType, outputFile);
+
+	        } catch (IOException e) {
+	        	e.printStackTrace();
+	        }
+
+	    }
 
 		private void shutDown(String message) {
 			if ((errStr = message) != null && thread != null) {
@@ -326,10 +373,10 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		}
 
 		public void run() {
-
 			duration = 0;
 			audioInputStream = null;
 
+			
 			// define the required attributes for our line,
 			// and make sure a compatible line is supported.
 
@@ -361,11 +408,13 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 				shutDown(ex.toString());
 				// JavaSound.showInfoDialog();
 				return;
-			} catch (Exception ex) {
+			} catch (Exception ex) {				
 				shutDown(ex.toString());
 				return;
 			}
 
+
+			
 			// play back the captured audio data
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			int frameSizeInBytes = format.getFrameSize();
@@ -397,9 +446,12 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 				ex.printStackTrace();
 			}
 
-			// load bytes into the audio input stream for playback
-
 			byte audioBytes[] = out.toByteArray();
+
+			// save bytes into a wav file
+			saveAudio(audioBytes, format);
+			
+			// load bytes into the audio input stream for playback
 			ByteArrayInputStream bais = new ByteArrayInputStream(audioBytes);
 			audioInputStream = new AudioInputStream(bais, format,
 					audioBytes.length / frameSizeInBytes);
@@ -407,7 +459,9 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 			long milliseconds = (long) ((audioInputStream.getFrameLength() * 1000) / format
 					.getFrameRate());
 			duration = milliseconds / 1000.0;
-
+			
+			
+			
 			try {
 				audioInputStream.reset();
 			} catch (Exception ex) {
