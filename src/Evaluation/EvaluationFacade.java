@@ -19,7 +19,7 @@ public class EvaluationFacade {
 	public static final String FILEPATH_EMOTION_TRAIN = "data/input/EmotionSpeechDatabase_Toronto";
 	public static final String FILEPATH_EMOTION_TEST = "data/input/emotionTest";
 	public static final String[] EMOTION_TAGS = { "angry", "disgust", "fear",
-			"happy", "neutral", "sad", "surprise" };
+			"happy", "neutral", "sad", "ps" };
 	public static final int TOP_N = 20;
 
 	private Precision _audioPrecision = null;
@@ -135,6 +135,7 @@ public class EvaluationFacade {
 		
 		for (int i = 0; i < emotionTestFiles.length; i++) {
 			String filename = emotionTestFiles[i].getAbsolutePath();
+			//ArrayList <String> generatedList = search.resultListOfSpectrum(filename, false);
 			ArrayList <String> generatedList = search.resultListOfMfcc(filename, false);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);

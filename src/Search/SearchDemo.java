@@ -189,11 +189,14 @@ public class SearchDemo {
         }
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
+        
+       
         ArrayList<String> result = sortHM.sort(simList);
+        
 
         String out = query + ":";
         for(int j = 0; j < result.size(); j++){
-            out += "\t" + result.get(j);
+            out += "\t" + result.get(j) + " " + simList.get(result.get(j));
         }
 
         System.out.println(out);

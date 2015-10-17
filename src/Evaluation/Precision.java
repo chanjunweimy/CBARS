@@ -13,12 +13,14 @@ public class Precision {
 	public double getPrecision(String fileName, String[] generatedResults) {
 		String tag = null;
         int truePositive = 0;
+        
+    	fileName = fileName.trim().toLowerCase();
 
         for (int i = 0; i < _tags.length; i++) {
-        	fileName = fileName.trim().toLowerCase();
             if (fileName.contains(_tags[i])) {
                 tag = _tags[i];
             }
+            //System.out.println(fileName);
         }
         
         for (int i = 0; i < generatedResults.length; i++) {
