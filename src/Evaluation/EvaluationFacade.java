@@ -34,9 +34,9 @@ public class EvaluationFacade {
 		_audioRecall = new Recall(FILEPATH_AUDIO_TRAIN, AUDIO_TAGS);
 		_audioMap = new MapAtN(FILEPATH_AUDIO_TRAIN, AUDIO_TAGS, TOP_N);
 
-		_emotionPrecision = new Precision(EMOTION_TAGS);
-		_emotionRecall = new Recall(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS);
-		_emotionMap = new MapAtN(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS, TOP_N);
+		//_emotionPrecision = new Precision(EMOTION_TAGS);
+		//_emotionRecall = new Recall(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS);
+		//_emotionMap = new MapAtN(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS, TOP_N);
 	}
 
 	private boolean writeToFile(String filename, boolean isAppend, String line) {
@@ -56,7 +56,7 @@ public class EvaluationFacade {
 	public boolean evaluateTest(File[] testFiles,
 			ArrayList<String[]> generatedResults, String resultFile,
 			String resultFileHeader, boolean isAudio) {
-		writeToFile(resultFile, false, resultFileHeader);
+		writeToFile(resultFile, true, resultFileHeader);
 
 		StringBuffer lineBuffer = new StringBuffer();
 
@@ -119,7 +119,7 @@ public class EvaluationFacade {
 		lineBuffer.append(avgMapAtN);
 		lineBuffer.append(" (variance) ");
 		lineBuffer.append(varMapAtN);
-		lineBuffer.append("\n");
+		lineBuffer.append("\n\n\n");
 		return writeToFile(resultFile, true, lineBuffer.toString());
 	}
 
@@ -128,7 +128,7 @@ public class EvaluationFacade {
 		//File audioTestDir = new File(FILEPATH_AUDIO_TEST);
 		
 		SearchDemo search = new SearchDemo();
-		
+		/*
 		File emotionTestDir = new File(FILEPATH_EMOTION_TEST);
 		File[] emotionTestFiles = emotionTestDir.listFiles();
 		ArrayList<String[]> generatedResults = new ArrayList<String[]>();
@@ -146,6 +146,65 @@ public class EvaluationFacade {
 		
 		EvaluationFacade evaluation = new EvaluationFacade();
 		evaluation.evaluateTest(emotionTestFiles, generatedResults, resultFile, resultFileHeader, isAudio);
+		*/
+		
+		// MFCC
+		File testDir = new File(FILEPATH_AUDIO_TEST);
+		File[] testFiles = testDir.listFiles();
+		ArrayList<String[]> generatedResults = new ArrayList<String[]>();
+		
+		for (int i = 0; i < testFiles.length; i++) {
+			String filename = testFiles[i].getAbsolutePath();
+			ArrayList <String> generatedList = search.resultListOfMfcc(filename, true);
+			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
+			generatedResults.add(generatedResult);
+		}
+		String resultFile = "result.txt";
+		String resultFileHeader = "###MFCC Test Result####\n";
+		boolean isAudio = true;
+			
+		EvaluationFacade evaluation = new EvaluationFacade();
+		evaluation.writeToFile(resultFile, false, "");
+		evaluation.evaluateTest(testFiles, generatedResults, resultFile, resultFileHeader, isAudio);
+		
+		// Energy
+		generatedResults = new ArrayList<String[]>();
+
+		for (int i = 0; i < testFiles.length; i++) {
+			String filename = testFiles[i].getAbsolutePath();
+			ArrayList <String> generatedList = search.resultListOfEnergy(filename, true);
+			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
+			generatedResults.add(generatedResult);
+		}
+		resultFileHeader = "###Energy Test Result####\n";
+
+		evaluation.evaluateTest(testFiles, generatedResults, resultFile, resultFileHeader, isAudio);
+		
+		// Magnitude Spectrum
+		generatedResults = new ArrayList<String[]>();
+
+		for (int i = 0; i < testFiles.length; i++) {
+			String filename = testFiles[i].getAbsolutePath();
+			ArrayList <String> generatedList = search.resultListOfSpectrum(filename, true);
+			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
+			generatedResults.add(generatedResult);
+		}
+		resultFileHeader = "###Magnitude Spectrum Test Result####\n";
+
+		evaluation.evaluateTest(testFiles, generatedResults, resultFile, resultFileHeader, isAudio);
+		
+		// Zero-crossing Rate
+		generatedResults = new ArrayList<String[]>();
+
+		for (int i = 0; i < testFiles.length; i++) {
+			String filename = testFiles[i].getAbsolutePath();
+			ArrayList <String> generatedList = search.resultListOfZeroCrossing(filename, true);
+			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
+			generatedResults.add(generatedResult);
+		}
+		resultFileHeader = "###Zero-Crossing Test Result####\n";
+
+		evaluation.evaluateTest(testFiles, generatedResults, resultFile, resultFileHeader, isAudio);
 	}
 	
 }

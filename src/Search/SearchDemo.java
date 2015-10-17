@@ -5,7 +5,12 @@ import Feature.MFCC;
 import Feature.MagnitudeSpectrum;
 import Feature.ZeroCrossing;
 import SignalProcess.WaveIO;
+import Distance.Bhattacharyya;
+import Distance.Chebychev;
+import Distance.CityBlock;
 import Distance.Cosine;
+import Distance.Euclidean;
+import Distance.RBFKernel;
 import Tool.SortHashMapByValue;
 
 import java.io.BufferedReader;
@@ -31,11 +36,15 @@ public class SearchDemo {
     private HashMap<String, double[]> _emotionMfcc = null;
     private HashMap<String, double[]> _emotionSpectrum = null;
     private HashMap<String, double[]> _emotionZeroCrossing = null;
-
+    
     public SearchDemo() {
 
     }
 
+    public enum Distance {
+    	BHAT, CHEV, RBF, CITYBLOCK, EUCLID, COSINE
+    };
+    
     /***
      * Get the feature of train set via the specific feature extraction method, and write it into offline file for efficiency;
      * Please modify this function, select or combine the methods (in the Package named 'Feature') to extract feature, such as Zero-Crossing, Energy, Magnitude-
@@ -100,7 +109,7 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultListOfEnergy(String query, boolean isAudio){
+    public ArrayList<String> resultListOfEnergy(String query, boolean isAudio, Distance distance){
     	if (_audioEnergy == null) {
         	_audioEnergy = readFeature("data/feature/audio_energy.txt");
         	_emotionEnergy = readFeature("data/feature/emotion_energy.txt");
@@ -114,11 +123,6 @@ public class SearchDemo {
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
-         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
-         */
-        Cosine cosine = new Cosine();
-
-        /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
         HashMap<String, double[]> trainFeatureList = null;
@@ -128,11 +132,48 @@ public class SearchDemo {
         } else {
         	trainFeatureList = _emotionEnergy;
         }
-
-//        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        
+        switch (distance) {
+        	case COSINE:
+	        	Cosine cosine = new Cosine();
+	        	for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+	        	break;
+        	case RBF:
+        		RBFKernel kernel = new RBFKernel();
+                for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), kernel.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+                break;
+        	case CITYBLOCK:
+        		CityBlock cityBlock = new CityBlock();
+        		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), cityBlock.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+                break;
+        	case EUCLID:
+        		Euclidean euclidean = new Euclidean();
+                for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), euclidean.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+                break;
+        	case CHEV:
+        		Chebychev cheby = new Chebychev();
+        		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), cheby.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+                break;
+        	case BHAT:
+        		Bhattacharyya bhat = new Bhattacharyya();
+        		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+	                simList.put((String)f.getKey(), bhat.getDistance(msFeature1, (double[]) f.getValue()));
+	            }
+                break;
+        
         }
+        
+//        System.out.println(trainFeatureList.size() + "=====");
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
         ArrayList<String> result = sortHM.sort(simList);
@@ -153,7 +194,7 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultListOfMfcc(String query, boolean isAudio){
+    public ArrayList<String> resultListOfMfcc(String query, boolean isAudio, Distance distance){
         if (_audioMfcc == null) {
         	_audioMfcc = readFeature("data/feature/audio_mfcc.txt");
         	_emotionMfcc = readFeature("data/feature/emotion_mfcc.txt");
@@ -168,11 +209,6 @@ public class SearchDemo {
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
-         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
-         */
-        Cosine cosine = new Cosine();
-
-        /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
         HashMap<String, double[]> trainFeatureList = null;
@@ -184,10 +220,45 @@ public class SearchDemo {
         }
 
 //        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        switch (distance) {
+    	case COSINE:
+        	Cosine cosine = new Cosine();
+        	for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+        	break;
+    	case RBF:
+    		RBFKernel kernel = new RBFKernel();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), kernel.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CITYBLOCK:
+    		CityBlock cityBlock = new CityBlock();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cityBlock.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case EUCLID:
+    		Euclidean euclidean = new Euclidean();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), euclidean.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CHEV:
+    		Chebychev cheby = new Chebychev();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cheby.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case BHAT:
+    		Bhattacharyya bhat = new Bhattacharyya();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), bhat.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
         }
-
+        
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
         
        
@@ -211,7 +282,7 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultListOfZeroCrossing(String query, boolean isAudio){
+    public ArrayList<String> resultListOfZeroCrossing(String query, boolean isAudio, Distance distance){
     	if (_audioZeroCrossing == null) {
         	_audioZeroCrossing = readFeature("data/feature/audio_zerocrossing.txt");
         	_emotionZeroCrossing = readFeature("data/feature/emotion_zerocrossing.txt");
@@ -225,11 +296,6 @@ public class SearchDemo {
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
-         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
-         */
-        Cosine cosine = new Cosine();
-
-        /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
         HashMap<String, double[]> trainFeatureList = null;
@@ -241,8 +307,43 @@ public class SearchDemo {
         }
 
 //        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        switch (distance) {
+    	case COSINE:
+        	Cosine cosine = new Cosine();
+        	for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+        	break;
+    	case RBF:
+    		RBFKernel kernel = new RBFKernel();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), kernel.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CITYBLOCK:
+    		CityBlock cityBlock = new CityBlock();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cityBlock.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case EUCLID:
+    		Euclidean euclidean = new Euclidean();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), euclidean.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CHEV:
+    		Chebychev cheby = new Chebychev();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cheby.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case BHAT:
+    		Bhattacharyya bhat = new Bhattacharyya();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), bhat.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
         }
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
@@ -264,7 +365,7 @@ public class SearchDemo {
      * @param query the selected query audio file;
      * @return the top 20 similar audio files;
      */
-    public ArrayList<String> resultListOfSpectrum(String query, boolean isAudio){
+    public ArrayList<String> resultListOfSpectrum(String query, boolean isAudio, Distance distance){
     	if (_audioSpectrum == null) {
         	_audioSpectrum = readFeature("data/feature/audio_spectrum.txt");
         	_emotionSpectrum = readFeature("data/feature/emotion_spectrum.txt");
@@ -278,11 +379,6 @@ public class SearchDemo {
         HashMap<String, Double> simList = new HashMap<String, Double>();
 
         /**
-         * Example of calculating the distance via Cosine Similarity, modify it by yourself please.
-         */
-        Cosine cosine = new Cosine();
-
-        /**
          * Load the offline file of features (the result of function 'trainFeatureList()'), modify it by yourself please;
          */
         HashMap<String, double[]> trainFeatureList = null;
@@ -294,8 +390,43 @@ public class SearchDemo {
         }
 
 //        System.out.println(trainFeatureList.size() + "=====");
-        for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
-            simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+        switch (distance) {
+    	case COSINE:
+        	Cosine cosine = new Cosine();
+        	for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cosine.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+        	break;
+    	case RBF:
+    		RBFKernel kernel = new RBFKernel();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), kernel.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CITYBLOCK:
+    		CityBlock cityBlock = new CityBlock();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cityBlock.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case EUCLID:
+    		Euclidean euclidean = new Euclidean();
+            for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), euclidean.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case CHEV:
+    		Chebychev cheby = new Chebychev();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), cheby.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
+    	case BHAT:
+    		Bhattacharyya bhat = new Bhattacharyya();
+    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
+                simList.put((String)f.getKey(), bhat.getDistance(msFeature1, (double[]) f.getValue()));
+            }
+            break;
         }
 
         SortHashMapByValue sortHM = new SortHashMapByValue(20);
@@ -351,6 +482,6 @@ public class SearchDemo {
         /**
          * Example of searching, selecting 'bus2.wav' as query;
          */
-        searchDemo.resultListOfSpectrum("data/input/test/bus2.wav", true);
+        searchDemo.resultListOfSpectrum("data/input/test/bus2.wav", true, Distance.COSINE);
     }
 }
