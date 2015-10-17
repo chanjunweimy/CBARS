@@ -193,7 +193,9 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 
             SearchDemo searchDemo = new SearchDemo();
             
-            ArrayList<String> resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), false);
+            ArrayList<String> resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), 
+            															false,
+            															SearchDemo.Distance.COSINE);
 
             for (int i = 0; i < resultFiles.size(); i ++){
                 

@@ -122,7 +122,9 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         		return;
         	}
             SearchDemo searchDemo = new SearchDemo();
-            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), true);
+            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), 
+            										true, 
+            										SearchDemo.Distance.COSINE);
 
             for (int i = 0; i < resultFiles.size(); i ++){
                 resultLabels[i].setText(resultFiles.get(i));

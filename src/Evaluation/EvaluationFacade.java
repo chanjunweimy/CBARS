@@ -155,7 +155,7 @@ public class EvaluationFacade {
 		
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfMfcc(filename, true);
+			ArrayList <String> generatedList = search.resultListOfMfcc(filename, true, SearchDemo.Distance.COSINE);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
@@ -172,7 +172,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfEnergy(filename, true);
+			ArrayList <String> generatedList = search.resultListOfEnergy(filename, true, SearchDemo.Distance.COSINE);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
@@ -185,7 +185,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfSpectrum(filename, true);
+			ArrayList <String> generatedList = search.resultListOfSpectrum(filename, true, SearchDemo.Distance.COSINE);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
@@ -198,7 +198,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfZeroCrossing(filename, true);
+			ArrayList <String> generatedList = search.resultListOfZeroCrossing(filename, true, SearchDemo.Distance.COSINE);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
