@@ -34,9 +34,9 @@ public class EvaluationFacade {
 		_audioRecall = new Recall(FILEPATH_AUDIO_TRAIN, AUDIO_TAGS);
 		_audioMap = new MapAtN(FILEPATH_AUDIO_TRAIN, AUDIO_TAGS, TOP_N);
 
-		_emotionPrecision = new Precision(EMOTION_TAGS);
-		_emotionRecall = new Recall(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS);
-		_emotionMap = new MapAtN(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS, TOP_N);
+		//_emotionPrecision = new Precision(EMOTION_TAGS);
+		//_emotionRecall = new Recall(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS);
+		//_emotionMap = new MapAtN(FILEPATH_EMOTION_TRAIN, EMOTION_TAGS, TOP_N);
 	}
 
 	private boolean writeToFile(String filename, boolean isAppend, String line) {
@@ -56,7 +56,7 @@ public class EvaluationFacade {
 	public boolean evaluateTest(File[] testFiles,
 			ArrayList<String[]> generatedResults, String resultFile,
 			String resultFileHeader, boolean isAudio) {
-		writeToFile(resultFile, false, resultFileHeader);
+		writeToFile(resultFile, true, resultFileHeader);
 
 		StringBuffer lineBuffer = new StringBuffer();
 
@@ -119,7 +119,7 @@ public class EvaluationFacade {
 		lineBuffer.append(avgMapAtN);
 		lineBuffer.append(" (variance) ");
 		lineBuffer.append(varMapAtN);
-		lineBuffer.append("\n");
+		lineBuffer.append("\n\n\n");
 		return writeToFile(resultFile, true, lineBuffer.toString());
 	}
 
@@ -155,13 +155,13 @@ public class EvaluationFacade {
 		
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfMfcc(filename, false);
+			ArrayList <String> generatedList = search.resultListOfMfcc(filename, true);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
 		String resultFile = "result.txt";
 		String resultFileHeader = "###MFCC Test Result####\n";
-		boolean isAudio = false;
+		boolean isAudio = true;
 			
 		EvaluationFacade evaluation = new EvaluationFacade();
 		evaluation.writeToFile(resultFile, false, "");
@@ -172,7 +172,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfEnergy(filename, false);
+			ArrayList <String> generatedList = search.resultListOfEnergy(filename, true);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
@@ -185,7 +185,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfSpectrum(filename, false);
+			ArrayList <String> generatedList = search.resultListOfSpectrum(filename, true);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
@@ -198,7 +198,7 @@ public class EvaluationFacade {
 
 		for (int i = 0; i < testFiles.length; i++) {
 			String filename = testFiles[i].getAbsolutePath();
-			ArrayList <String> generatedList = search.resultListOfZeroCrossing(filename, false);
+			ArrayList <String> generatedList = search.resultListOfZeroCrossing(filename, true);
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
 		}
