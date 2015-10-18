@@ -1,4 +1,14 @@
 #################
+## Project generated files
+#################
+
+*.7z
+result.txt
+emotion.wav
+*.orig
+
+
+#################
 ## Eclipse
 #################
 
