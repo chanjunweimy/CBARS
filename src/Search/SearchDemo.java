@@ -441,7 +441,9 @@ public class SearchDemo {
         return result;
     }
     
-    
+    public String classifyEmotion(String query) {
+    	return "happy";
+    }
 
     /**
      * Load the offline file of features (the result of function 'trainFeatureList()');

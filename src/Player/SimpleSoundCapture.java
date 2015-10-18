@@ -41,6 +41,7 @@ package Player;
  */
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -157,8 +158,9 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 	private JTextField addTextField(JPanel p, boolean state) {
 		JTextField b = new JTextField();
 		//b.addActionListener(this);
-		b.setVisible(state);
+		b.setEnabled(state);
 		b.setEditable(false);
+		b.setForeground(Color.RED);
 		p.add(b);
 		return b;
 	}
@@ -193,13 +195,11 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 
             SearchDemo searchDemo = new SearchDemo();
             
-            ArrayList<String> resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), 
-            															false,
-            															SearchDemo.Distance.COSINE);
+            String emotion = searchDemo.classifyEmotion(queryAudio.getAbsolutePath());
 
-            for (int i = 0; i < resultFiles.size(); i ++){
-                
-            }
+            _textField.setEnabled(true);
+            _textField.setText(emotion);
+            this.revalidate();
 		}
 	}
 
