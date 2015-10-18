@@ -94,6 +94,8 @@ public class SvmModelGenerator {
 		String[] tags = EvaluationFacade.EMOTION_TAGS;
 		for (int i = 0; i < tags.length; i++) {
 			if (key.endsWith(tags[i] + EXT)) {
+				System.out.print(key + " ");
+				System.out.println(i);
 				return i + 1;
 			}
 		}

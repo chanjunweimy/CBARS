@@ -46,9 +46,11 @@ public class SvmEmotionClassifier {
 			queryFeature[i].value = query[i];
 		}
 		
-		int label = (int) svm.svm_predict(_model, queryFeature);
+		double value = svm.svm_predict(_model, queryFeature);
+		int label = (int) value;
 		label--;
 
+		System.out.println(value);
 		System.out.println(label);
 		
 		String[] tags = EvaluationFacade.EMOTION_TAGS;
