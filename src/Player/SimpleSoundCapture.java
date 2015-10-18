@@ -50,7 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -85,14 +84,25 @@ import Search.SearchDemo;
  */
 public class SimpleSoundCapture extends JPanel implements ActionListener {
 
+	public static final String RECORD_STOP = "Stop";
+
+	public static final String RECORD_START = "Record";
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4414368244275539603L;
 
+	/**
+	 * These are created to triger action for the parent class
+	 * Reference: http://stackoverflow.com/questions/9346912/how-to-trigger-an-action-in-parent-jpanel-when-a-component-in-a-child-jpanel-is
+	 */
+	public static final String COMBO_CHANGED = "Combo Changed";
+	private String _oldValue = "";
+	
 	private final int bufSize = 16384;
 
-	private final String FILE_CAPTURED_NAME = "emotion.wav";
+	public final static String FILE_CAPTURED_NAME = "emotion.wav";
 
 	private Capture capture = new Capture();
 
@@ -126,7 +136,7 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 		JPanel panel = new JPanel();
 		panel.setBorder(new EmptyBorder(10, 0, 5, 0));
 		playB = addButton("Play", panel, false);
-		captB = addButton("Record", panel, true);
+		captB = addButton(SimpleSoundCapture.RECORD_START, panel, true);
 		_classifyEmotion = addButton("Classify", panel, false);
 		_textField = addTextField(panel, false);
 		p2.add(panel);
@@ -171,21 +181,29 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 			if (playB.getText().startsWith("Play")) {
 				playback.start();
 				captB.setEnabled(false);
-				playB.setText("Stop");
+				playB.setText(SimpleSoundCapture.RECORD_STOP);
 			} else {
 				playback.stop();
 				captB.setEnabled(true);
 				playB.setText("Play");
 			}
 		} else if (obj.equals(captB)) {
-			if (captB.getText().startsWith("Record")) {
+			if (captB.getText().startsWith(SimpleSoundCapture.RECORD_START)) {
+				String text = SimpleSoundCapture.RECORD_START;
+		        firePropertyChange(COMBO_CHANGED, _oldValue, text);
+		        _oldValue = text;
+				
 				capture.start();
 				playB.setEnabled(false);
 				_classifyEmotion.setEnabled(false);
-				captB.setText("Stop");
+				captB.setText(SimpleSoundCapture.RECORD_STOP);
 			} else {
+				String text = SimpleSoundCapture.RECORD_STOP;
+		        firePropertyChange(COMBO_CHANGED, _oldValue, text);
+		        _oldValue = text;
+				
 				capture.stop();
-				captB.setText("Record");
+				captB.setText(SimpleSoundCapture.RECORD_START);
 				playB.setEnabled(true);
 				_classifyEmotion.setEnabled(true);
 			}
@@ -369,7 +387,7 @@ public class SimpleSoundCapture extends JPanel implements ActionListener {
 			if ((errStr = message) != null && thread != null) {
 				thread = null;
 				playB.setEnabled(true);
-				captB.setText("Record");
+				captB.setText(SimpleSoundCapture.RECORD_START);
 				System.err.println(errStr);
 			}
 		}

@@ -29,21 +29,24 @@ public class SearchDemo {
 	};
 	
 	// All the scores for respective features, derived from result
+	private static final double SCORE_MFCC_CITYBLOCK = (0.6485436893203882 + 0.6116421521375079) * 100 / 2;
+	private static final double SCORE_ENERGY_CITYBLOCK = (0.34174757281553414 + 0.23915478818008193) * 100 / 2;
+	private static final double SCORE_MS_BHAT = (0.6422330097087378 + 0.6197571985281075) * 100 / 2;
+	private static final double SCORE_ZCR_CITYBLOCK = (0.2082524271844662 + 0.08922754147898056) * 100 / 2;
+
+	/*
 	private static final double SCORE_MFCC_BHAT = (0.15922330097087398 + 0.07504099469168307) * 100 / 2;
 	private static final double SCORE_MFCC_CHEB = (0.566504854368932 + 0.523733426615182) * 100 / 2;
-	private static final double SCORE_MFCC_CITYBLOCK = (0.6485436893203882 + 0.6116421521375079) * 100 / 2;
 	private static final double SCORE_MFCC_COSINE = (0.6446601941747572 + 0.6060661329091586) * 100 / 2;
 	private static final double SCORE_MFCC_EUCLID = (0.6388349514563108 + 0.5982077549822674) * 100 / 2;
 	private static final double SCORE_MFCC_RBF = (0.2233009708737864 + 0.10244177489661272) * 100 / 2;
 	
 	private static final double SCORE_ENERGY_BHAT = (0.18349514563106806 + 0.09300925241260088) * 100 / 2;
 	private static final double SCORE_ENERGY_CHEB = (0.2383495145631068 + 0.12263912080710379) * 100 / 2;
-	private static final double SCORE_ENERGY_CITYBLOCK = (0.34174757281553414 + 0.23915478818008193) * 100 / 2;
 	private static final double SCORE_ENERGY_COSINE = (0.1849514563106797 + 0.0941678792925825) * 100 / 2;
 	private static final double SCORE_ENERGY_EUCLID = (0.3165048543689321 + 0.2054393308297469) * 100 / 2;
 	private static final double SCORE_ENERGY_RBF = (0.024271844660194174 + 0.023580810965162763) * 100 / 2;
 	
-	private static final double SCORE_MS_BHAT = (0.6422330097087378 + 0.6197571985281075) * 100 / 2;
 	private static final double SCORE_MS_CHEB = (0.5990291262135923+ 0.5506483078504517)  * 100 / 2;
 	private static final double SCORE_MS_CITYBLOCK = (0.5762135922330098 + 0.5393107971507719) * 100 / 2;
 	private static final double SCORE_MS_COSINE = (0.6325242718446604 + 0.6099815630868377) * 100 / 2;
@@ -52,11 +55,10 @@ public class SearchDemo {
 	
 	private static final double SCORE_ZCR_BHAT = (0.12524271844660195 + 0.03864605862141103) * 100 / 2;
 	private static final double SCORE_ZCR_CHEB = (0.2082524271844662 + 0.08922754147898056) * 100 / 2;
-	private static final double SCORE_ZCR_CITYBLOCK = (0.2082524271844662 + 0.08922754147898056) * 100 / 2;
 	private static final double SCORE_ZCR_COSINE = (0.12524271844660195 + 0.03864605862141103) * 100 / 2;
 	private static final double SCORE_ZCR_EUCLID = (0.2082524271844662 + 0.08922754147898056) * 100 / 2;
 	private static final double SCORE_ZCR_RBF = (0.10388349514563112 + 0.05187985153170457) * 100 / 2;
-
+	*/
 	
 	
 	/**
@@ -858,7 +860,18 @@ public class SearchDemo {
     }
     
     public String classifyEmotion(String query) {
-    	return "happy";
+    	WaveIO waveIO = new WaveIO();
+
+        short[] inputSignal = waveIO.readWave(query);
+        MFCC ms = new MFCC();
+        ms.process(inputSignal);
+        double[] msFeature1 = ms.getMeanFeature();
+        SvmEmotionClassifier classifier = Search.SvmEmotionClassifier.getObject();
+        String emotion = classifier.classifyEmotion(msFeature1);
+        if (emotion.equals("ps")) {
+        	emotion = "pleasant surprise";
+        }
+    	return emotion;
     }
 
     public static void main(String[] args){

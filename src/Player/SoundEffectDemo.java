@@ -4,6 +4,8 @@ import Search.SearchDemo.Distance;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -58,10 +60,30 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         searchButton = new JButton("Search");
         searchButton.addActionListener(this);
 
+        SimpleSoundCapture ssc = new SimpleSoundCapture();
+		ssc.open();
+        
         JPanel queryPanel = new JPanel();
         queryPanel.add(openButton);
         queryPanel.add(queryButton);
         queryPanel.add(searchButton);
+        queryPanel.add(ssc);
+        
+        ssc.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+               if (evt.getPropertyName().equals(SimpleSoundCapture.COMBO_CHANGED)) {
+                  String innerValue = evt.getNewValue().toString();
+                  if (innerValue.equals(SimpleSoundCapture.RECORD_START)) {
+                	  queryAudio = null;
+                  } else if (innerValue.equals(SimpleSoundCapture.RECORD_STOP)) {
+                	  queryAudio = new File(SimpleSoundCapture.FILE_CAPTURED_NAME);
+                	  queryButton.setText("recorded audio");
+                  }
+               }
+            }
+         });
 
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridLayout(0, 4, 60, 60));
@@ -119,7 +141,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         		return;
         	}
             SearchDemo searchDemo = new SearchDemo();
-            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), true, Distance.COSINE);
+            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), true, Distance.CITYBLOCK);
 
             for (int i = 0; i < resultFiles.size(); i ++){
                 resultLabels[i].setText(resultFiles.get(i));
