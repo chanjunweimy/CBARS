@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 
 
+
 import Search.SearchDemo;
 import Search.SearchDemo.Distance;
 import Tool.Stats;
@@ -55,6 +56,24 @@ public class EvaluationFacade {
 		return true;
 	}
 
+	public void evaluateEmotionClassification(File[] testFiles, SearchDemo search) {
+		int total = testFiles.length;
+		int correct = 0;
+		for (int i = 0; i < testFiles.length; i++) {
+			String testFile = testFiles[i].getAbsolutePath();
+			String emotion = search.classifyEmotion(testFile);
+			if (emotion.equals("pleasant surprise")) {
+				emotion = "ps";
+			}
+			
+			if (testFile.contains(emotion)) {
+				correct++;
+			}
+		}
+		double accuracy = (double) correct / (double) total;
+		System.out.println(accuracy);
+	}
+	
 	public boolean evaluateTest(File[] testFiles,
 			ArrayList<String[]> generatedResults, String resultFile,
 			String resultFileHeader, boolean isAudio) {
@@ -131,6 +150,12 @@ public class EvaluationFacade {
 		//File audioTestDir = new File(FILEPATH_AUDIO_TEST);
 		
 		SearchDemo search = new SearchDemo();
+		EvaluationFacade evaluation = new EvaluationFacade();
+		File emotionTestDir = new File(FILEPATH_EMOTION_TEST);
+		File[] emotionTestFiles = emotionTestDir.listFiles();
+		evaluation.evaluateEmotionClassification(emotionTestFiles, search);
+		
+		
 		/*
 		File emotionTestDir = new File(FILEPATH_EMOTION_TEST);
 		File[] emotionTestFiles = emotionTestDir.listFiles();
@@ -151,6 +176,7 @@ public class EvaluationFacade {
 		evaluation.evaluateTest(emotionTestFiles, generatedResults, resultFile, resultFileHeader, isAudio);
 		*/
 		
+		/*
 		// MFCC - BHAT
 		File testDir = new File(FILEPATH_AUDIO_TEST);
 		File[] testFiles = testDir.listFiles();
@@ -219,8 +245,10 @@ public class EvaluationFacade {
 		
 		//4-Features Combinations
 		evaluateResult(testFiles, null, null, search, isAudio, Feature.MFCC_ENERGY_MS_ZCR);
+		*/
 	}
 	
+	@SuppressWarnings("unused")
 	private static void evaluateResult(File[] testFiles, Distance d1, Distance d2, SearchDemo search, boolean isAudio, Feature feature) {
 		ArrayList<String[]>generatedResults = new ArrayList<String[]>();
 		ArrayList <String> generatedList = new ArrayList<String>();

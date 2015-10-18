@@ -13,7 +13,11 @@ import SignalProcess.WaveIO;
 public class AudioFeaturesGenerator {
 	private static final String FILEPATH_AUDIO_TRAIN = "data/input/train";
 	private static final String FILEPATH_EMOTION_TRAIN = "data/input/EmotionSpeechDatabase_Toronto";
-	private static final String FILEPATH_FEATURE_OUT = "data/feature";
+	public static final String FILEPATH_FEATURE_OUT = "data/feature";
+	public static final String EMOTION_ZERO_CROSSING = FILEPATH_FEATURE_OUT + "/emotion_zerocrossing.txt";
+	public static final String EMOTION_SPECTRUM = FILEPATH_FEATURE_OUT + "/emotion_spectrum.txt";
+	public static final String EMOTION_ENERGY = FILEPATH_FEATURE_OUT + "/emotion_energy.txt";
+	public static final String EMOTION_MFCC = FILEPATH_FEATURE_OUT + "/emotion_mfcc.txt";
 	
 	public boolean computeMFCC(File[] audioFiles, String filename) {
 		writeToFile(filename, false, "");
@@ -140,28 +144,15 @@ public class AudioFeaturesGenerator {
 		return f;
 	}
 	
-	public static void main(String[] args) {
-		AudioFeaturesGenerator featureGenerator = new AudioFeaturesGenerator();
-
-		/*
+	@SuppressWarnings("unused")
+	private static void trainAudio(AudioFeaturesGenerator featureGenerator) {
 		File audioTrain = new File(FILEPATH_AUDIO_TRAIN);
 		File[] audioFiles = audioTrain.listFiles();
-		*/	
-		File emotionTrain = new File(FILEPATH_EMOTION_TRAIN);
-		File[] emotionFiles = emotionTrain.listFiles();
-		
-		/*
 		File audioMfccFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/audio_mfcc.txt");
 		File audioEnergyFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/audio_energy.txt");
 		File audioSpectrumFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/audio_spectrum.txt");
 		File audioZCFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/audio_zerocrossing.txt");
-		*/
-		File emotionMfccFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/emotion_mfcc.txt");
-		File emotionEnergyFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/emotion_energy.txt");
-		File emotionSpectrumFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/emotion_spectrum.txt");
-		File emotionZCFile = featureGenerator.createFile(FILEPATH_FEATURE_OUT + "/emotion_zerocrossing.txt");
 		
-		/*
 		if (!featureGenerator.computeMFCC(audioFiles, audioMfccFile.getAbsolutePath())) {
 			System.exit(-1);
 		} else if (!featureGenerator.computeEnergy(audioFiles, audioEnergyFile.getAbsolutePath())) {
@@ -171,8 +162,27 @@ public class AudioFeaturesGenerator {
 		} else if (!featureGenerator.computeZeroCrossing(audioFiles, audioZCFile.getAbsolutePath())) {
 			System.exit(-1);
 		} 
-		*/
-		
+	}
+	
+	public static void main(String[] args) {
+		AudioFeaturesGenerator featureGenerator = new AudioFeaturesGenerator();
+
+		//trainAudio(featureGenerator);
+		trainEmotion(featureGenerator);
+	}
+
+	/**
+	 * @param featureGenerator
+	 */
+	private static void trainEmotion(AudioFeaturesGenerator featureGenerator) {
+		File emotionTrain = new File(FILEPATH_EMOTION_TRAIN);
+		File[] emotionFiles = emotionTrain.listFiles();
+
+		File emotionMfccFile = featureGenerator.createFile(AudioFeaturesGenerator.EMOTION_MFCC);
+		File emotionEnergyFile = featureGenerator.createFile(AudioFeaturesGenerator.EMOTION_ENERGY);
+		File emotionSpectrumFile = featureGenerator.createFile(AudioFeaturesGenerator.EMOTION_SPECTRUM);
+		File emotionZCFile = featureGenerator.createFile(AudioFeaturesGenerator.EMOTION_ZERO_CROSSING);
+
 		if (!featureGenerator.computeMFCC(emotionFiles, emotionMfccFile.getAbsolutePath())) {
 			System.exit(-1);
 		} else if (!featureGenerator.computeEnergy(emotionFiles, emotionEnergyFile.getAbsolutePath())) {
