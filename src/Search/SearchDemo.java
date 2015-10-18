@@ -854,6 +854,10 @@ public class SearchDemo {
 
         return fList;
     }
+    
+    public String classifyEmotion(String query) {
+    	return "happy";
+    }
 
     public static void main(String[] args){
         SearchDemo searchDemo = new SearchDemo();
