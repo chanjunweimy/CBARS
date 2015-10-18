@@ -1,5 +1,6 @@
 package Player;
 import Search.SearchDemo;
+import Search.SearchDemo.Distance;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -57,14 +58,10 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         searchButton = new JButton("Search");
         searchButton.addActionListener(this);
 
-        SimpleSoundCapture ssc = new SimpleSoundCapture();
-		ssc.open();
-        
         JPanel queryPanel = new JPanel();
         queryPanel.add(openButton);
         queryPanel.add(queryButton);
         queryPanel.add(searchButton);
-        queryPanel.add(ssc);
 
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridLayout(0, 4, 60, 60));
@@ -122,9 +119,7 @@ public class SoundEffectDemo extends JFrame implements ActionListener{
         		return;
         	}
             SearchDemo searchDemo = new SearchDemo();
-            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), 
-            										true, 
-            										SearchDemo.Distance.COSINE);
+            resultFiles = searchDemo.resultListOfMfcc(queryAudio.getAbsolutePath(), true, Distance.COSINE);
 
             for (int i = 0; i < resultFiles.size(); i ++){
                 resultLabels[i].setText(resultFiles.get(i));

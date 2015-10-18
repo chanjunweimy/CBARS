@@ -5,6 +5,7 @@
 *.7z
 result.txt
 emotion.wav
+*.orig
 
 
 #################
