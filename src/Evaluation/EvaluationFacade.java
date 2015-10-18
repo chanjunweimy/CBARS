@@ -269,6 +269,11 @@ public class EvaluationFacade {
 				case ENERGY_MS_ZCR: 
 					generatedList = search.resultListOfThreeFeatures(filename, isAudio, Feature.ENERGY, Feature.MS, Feature.ZCR);
 					break;
+				case MFCC_ENERGY_MS_ZCR:
+					generatedList = search.resultListOfAllFeatures(filename, isAudio, Feature.ENERGY, Feature.MFCC, Feature.MS, Feature.ZCR);
+					break;
+				default:
+					break;
 			}
 			String[] generatedResult = generatedList.toArray(new String[generatedList.size()]);
 			generatedResults.add(generatedResult);
