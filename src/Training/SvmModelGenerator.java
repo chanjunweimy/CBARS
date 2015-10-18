@@ -69,7 +69,7 @@ public class SvmModelGenerator {
 	
 	private svm_parameter getTrainingParameter() {
 		svm_parameter param = new svm_parameter();
-		param.svm_type = svm_parameter.NU_SVR;
+		param.svm_type = svm_parameter.NU_SVC;
 		param.kernel_type = svm_parameter.RBF;
 		param.gamma = 1;
 		param.eps = 0.001;
