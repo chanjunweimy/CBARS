@@ -61,8 +61,8 @@ public class EvaluationFacade {
 		int correct = 0;
 		for (int i = 0; i < testFiles.length; i++) {
 			String testFile = testFiles[i].getAbsolutePath();
-			System.out.println(testFiles[i].getName());
 			String emotion = search.classifyEmotion(testFile);
+			System.out.println(testFiles[i].getName() + " " + emotion);
 			if (emotion.equals("pleasant surprise")) {
 				emotion = "ps";
 			}
@@ -72,7 +72,7 @@ public class EvaluationFacade {
 			}
 		}
 		double accuracy = (double) correct / (double) total;
-		System.out.println(accuracy);
+		System.out.println("result: " + accuracy * 100 + "%");
 	}
 	
 	public boolean evaluateTest(File[] testFiles,
