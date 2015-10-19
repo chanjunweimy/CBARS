@@ -3,6 +3,8 @@ package Training;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,20 @@ import libsvm.svm_parameter;
 import libsvm.svm_problem;
 
 public class SvmModelGenerator {
+	public static class IntegerSvmNode {
+		int label;
+		svm_node[] actualData;
+	}
+	
+	public static class sortIntegerSvmNode implements Comparator <IntegerSvmNode> {
+
+		@Override
+		public int compare(IntegerSvmNode o1, IntegerSvmNode o2) {
+			return o1.label - o2.label;
+		}
+		
+	}
+	
 	private static final String EXT = ".wav";
 	public static final String SVM_MODEL_FILE = AudioFeaturesGenerator.FILEPATH_FEATURE_OUT + "/svm_model.txt";
 		
@@ -43,23 +59,35 @@ public class SvmModelGenerator {
 		double[] outcomes = new double[size];
 		svm_node[][] datas = null;
 		int index = 0;
+		
+		IntegerSvmNode[] nodes = new IntegerSvmNode[size];
 		for (Map.Entry<String, double[]> entry : emotionMfcc.entrySet()) {
 		    String key = entry.getKey();
-		    outcomes[index] = retrieveOutcome(key);
+		    
+		    nodes[index] = new IntegerSvmNode();
+		    nodes[index].label = retrieveOutcome(key);
 		    
 		    double[] value = entry.getValue();
 		    if (datas == null) {
 		    	datas = new svm_node[size][value.length];
 		    }
 		    
+		    nodes[index].actualData = new svm_node[value.length];
+		    
 		    for (int i = 0; i < value.length; i++) {
-		    	datas[index][i] = new svm_node();
-		    	datas[index][i].index = i + 1;
-		    	datas[index][i].value = value[i];
+		    	nodes[index].actualData[i] = new svm_node();
+		    	nodes[index].actualData[i].index = i + 1;
+		    	nodes[index].actualData[i].value = value[i];
 		    }
 		    index++;
 		}
 		
+		Arrays.sort(nodes, new sortIntegerSvmNode());
+		
+		for (int i = 0; i < nodes.length; i++) {
+			outcomes[i] = nodes[i].label;
+			datas[i] = nodes[i].actualData;
+		}
 		prob.l = size;
 		prob.x = datas;
 		prob.y = outcomes;
@@ -70,7 +98,7 @@ public class SvmModelGenerator {
 	private svm_parameter getTrainingParameter() {
 		svm_parameter param = new svm_parameter();
 		param.svm_type = svm_parameter.NU_SVC;
-		param.kernel_type = svm_parameter.RBF;
+		param.kernel_type = svm_parameter.SIGMOID;
 		param.gamma = 1;
 		param.eps = 0.001;
 		param.cache_size = 100;
@@ -90,7 +118,7 @@ public class SvmModelGenerator {
 		
 	}
 	
-	private double retrieveOutcome(String key) {
+	private int retrieveOutcome(String key) {
 		String[] tags = EvaluationFacade.EMOTION_TAGS;
 		for (int i = 0; i < tags.length; i++) {
 			if (key.endsWith(tags[i] + EXT)) {
