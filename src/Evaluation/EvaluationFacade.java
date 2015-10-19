@@ -61,6 +61,7 @@ public class EvaluationFacade {
 		int correct = 0;
 		for (int i = 0; i < testFiles.length; i++) {
 			String testFile = testFiles[i].getAbsolutePath();
+			System.out.println(testFiles[i].getName());
 			String emotion = search.classifyEmotion(testFile);
 			if (emotion.equals("pleasant surprise")) {
 				emotion = "ps";
