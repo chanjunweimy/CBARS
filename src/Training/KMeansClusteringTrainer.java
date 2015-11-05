@@ -10,23 +10,23 @@ import Feature.MFCC;
 import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
 
-public class KMeansClusteringTraining {
+public class KMeansClusteringTrainer {
 	private int _k;
 	private int _dim;
-	private Vector <Vector <double[]>> _clusterPoints;
+	private int[] _numOfClusterPoints;
 	private Vector <double[]> _meanClusterPoints;
 	
-	private static final int DEFAULT_K = 5;
+	private static final int DEFAULT_K = 6; // sqrt(121/2)
 	private static final int DEFAULT_DIM = 12;
 	
-	private static final String DIR_TRAINING_FILES = "data/input/IEMOCAP_database";
+	public static final String DIR_TRAINING_FILES = "data/input/IEMOCAP_database";
 	public static final String FILE_MODEL = "data/feature/kmeanclusteringmodel.txt";
 	
-	public KMeansClusteringTraining() {
+	public KMeansClusteringTrainer() {
 		initClass(DEFAULT_K, DEFAULT_DIM);
 	}
 	
-	public KMeansClusteringTraining(int k, int dim) {
+	public KMeansClusteringTrainer(int k, int dim) {
 		initClass(k, dim);
 	}
 
@@ -49,16 +49,16 @@ public class KMeansClusteringTraining {
 	}
 	
 	private void setClusters(int k, int dim) {
-		_clusterPoints = new Vector <Vector <double[]>>();
+		_numOfClusterPoints = new int[k];
 		_meanClusterPoints = new Vector <double[]>();
 		for (int i = 0; i < k; i++) {
 			double[] initialPoint = new double[dim];
 			Vector <double[]> points = new Vector < double[] >();
 			for (int j = 0; j < dim; j++) {
-				initialPoint[j] = i + 0.0;
+				initialPoint[j] = 0.01 * i;
 			}
 			points.add(initialPoint);
-			_clusterPoints.add(points);
+			_numOfClusterPoints[i] = 1;
 			_meanClusterPoints.add(initialPoint);
 		}
 	}
@@ -68,6 +68,34 @@ public class KMeansClusteringTraining {
 			return false;
 		}
 		
+		int chosenIndex = getNearestClusterIndex(data);
+		updateSelectedCluster(data, chosenIndex);
+		
+		return true;
+	}
+
+	/**
+	 * @param data
+	 * @param chosenIndex
+	 */
+	private void updateSelectedCluster(double[] data, int chosenIndex) {
+		double[] avg = new double[_dim];
+		int c = _numOfClusterPoints[chosenIndex];
+		_numOfClusterPoints[chosenIndex]++;
+		
+		double[] meanCluster = _meanClusterPoints.get(chosenIndex);
+		for (int i = 0; i < _dim; i++) {
+			avg[i] = (meanCluster[i] * c + data[i])/ (c + 1.0);
+		}
+		
+		_meanClusterPoints.set(chosenIndex, avg);
+	}
+
+	/**
+	 * @param data
+	 * @return
+	 */
+	private int getNearestClusterIndex(double[] data) {
 		Euclidean euclidean = Euclidean.getObject();
 		double minDistance = 0;
 		int chosenIndex = 0;
@@ -80,30 +108,7 @@ public class KMeansClusteringTraining {
 				minDistance = Math.min(minDistance, distance);
 			}
 		}
-		Vector <double[]> clusterPointsAtIndex = _clusterPoints.get(chosenIndex);
-		clusterPointsAtIndex.add(data);
-		_clusterPoints.set(chosenIndex, clusterPointsAtIndex);
-		
-		int c = clusterPointsAtIndex.size();
-		double[] avg = new double[_dim];
-		for (int i = 0; i < _dim; i++) {
-			avg[i] = 0;
-		}
-		
-		for (int i = 0; i < c; i++) {
-			double[] curData = clusterPointsAtIndex.get(i);
-			for (int j = 0; j < _dim; j++) {
-				avg[j] += curData[j];
-			}
-		}
-		
-		for (int i = 0; i < _dim; i++) {
-			avg[i] /= (c + 0.0);
-		}
-		
-		_meanClusterPoints.set(chosenIndex, avg);
-		
-		return true;
+		return chosenIndex;
 	}
 
 	public int getDim() {
@@ -153,8 +158,19 @@ public class KMeansClusteringTraining {
 		return true;
 	}
 	
+	/**
+	 * @return
+	 */
+	public static int getFrameSizeThatApproxOneSecond() {
+		int powerOfTwo = 1;
+    	for (int i = 0; i < 9; i++) {
+    		powerOfTwo = powerOfTwo << 1;
+    	}
+		return powerOfTwo;
+	}
+	
 	public static void main (String[] args) {
-		KMeansClusteringTraining machineLearning = new KMeansClusteringTraining();
+		KMeansClusteringTrainer machineLearning = new KMeansClusteringTrainer();
 		
 		File trainingDir = new File(DIR_TRAINING_FILES);
 		File[] trainingFiles = trainingDir.listFiles();
@@ -165,11 +181,13 @@ public class KMeansClusteringTraining {
     	MFCC mfcc = new MFCC(powerOfTwo);
 
 		for (int i = 0; i < trainingFiles.length; i++) {
-			System.out.println(i);
+			System.out.println("i: " + trainingFiles[i].getName());
 			WavObj waveObj = waveIO.constructWavObj(trainingFiles[i].getAbsolutePath());
-			double[][] MFCC = mfcc.process(waveObj.getSignal());//13-d mfcc
-			for(int j = 0; j < MFCC.length; j++) {
-				if (!machineLearning.train(MFCC[j])) {
+			Vector <short[]> signals = waveObj.splitToSignals();
+			for (int j = 0; j < signals.size(); j++) {
+				mfcc.process(signals.get(j));//13-d mfcc
+				double[] meanMfcc = mfcc.getMeanFeature();
+				if (!machineLearning.train(meanMfcc)) {
 					return;
 				}
 			}
@@ -178,14 +196,5 @@ public class KMeansClusteringTraining {
 		machineLearning.saveClustersToFile(FILE_MODEL);
 	}
 
-	/**
-	 * @return
-	 */
-	public static int getFrameSizeThatApproxOneSecond() {
-		int powerOfTwo = 1;
-    	for (int i = 0; i < 15; i++) {
-    		powerOfTwo = powerOfTwo << 1;
-    	}
-		return powerOfTwo;
-	}
+
 }
