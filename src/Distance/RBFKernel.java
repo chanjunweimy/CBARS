@@ -13,7 +13,7 @@ public class RBFKernel {
 	private Euclidean _euclidean = null;
 	
 	public RBFKernel() {
-		_euclidean = new Euclidean();
+		_euclidean = Euclidean.getObject();
 	}
 	
 	public double getDistance(double[] query1, double[] query2){

@@ -191,7 +191,7 @@ public class SearchDemo {
                 }
         		break;
         	case EUCLID:
-        		Euclidean euc = new Euclidean();
+        		Euclidean euc = Euclidean.getObject();
         		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
                     simList.put((String)f.getKey(), euc.getDistance(msFeature1, (double[]) f.getValue()));
                 }
@@ -274,7 +274,7 @@ public class SearchDemo {
 	            }
 	    		break;
 	    	case EUCLID:
-	    		Euclidean euc = new Euclidean();
+	    		Euclidean euc = Euclidean.getObject();
 	    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
 	                simList.put((String)f.getKey(), euc.getDistance(msFeature1, (double[]) f.getValue()));
 	            }
@@ -357,7 +357,7 @@ public class SearchDemo {
 	            }
 	    		break;
 	    	case EUCLID:
-	    		Euclidean euc = new Euclidean();
+	    		Euclidean euc = Euclidean.getObject();
 	    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
 	                simList.put((String)f.getKey(), euc.getDistance(msFeature1, (double[]) f.getValue()));
 	            }
@@ -439,7 +439,7 @@ public class SearchDemo {
 	            }
 	    		break;
 	    	case EUCLID:
-	    		Euclidean euc = new Euclidean();
+	    		Euclidean euc = Euclidean.getObject();
 	    		for (Map.Entry<String, double[]> f: trainFeatureList.entrySet()){
 	                simList.put((String)f.getKey(), euc.getDistance(msFeature1, (double[]) f.getValue()));
 	            }

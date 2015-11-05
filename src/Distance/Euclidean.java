@@ -4,7 +4,18 @@ package Distance;
  * Created by workshop on 9/18/2015.
  */
 public class Euclidean {
-
+	private static Euclidean _euclidean = null;
+	
+	private Euclidean() {
+	}
+	
+	public static Euclidean getObject() {
+		if (_euclidean == null) {
+			_euclidean = new Euclidean();
+		}
+		return _euclidean;
+	}
+	
     public double getDistance(double[] query1, double[] query2){
         return getNotNormalizedDistance(query1, query2);
     }

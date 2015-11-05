@@ -88,7 +88,7 @@ public class FeatureExtraction {
         Cosine cosine = new Cosine();
         double ss = cosine.getDistance(msFeature1, msFeature2);
 
-        Euclidean euclidean = new Euclidean();
+        Euclidean euclidean = Euclidean.getObject();
         double ee = euclidean.getDistance(msFeature1, msFeature2);
 
         CityBlock cityBlock = new CityBlock();
