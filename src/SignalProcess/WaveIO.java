@@ -4,9 +4,12 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by workshop on 9/18/2015.
@@ -83,7 +86,27 @@ public class WaveIO {
             e.printStackTrace();
         }
     }
-
+    
+    public WavObj constructWavObj(String path) {
+        File fileRead = new File(path);
+        AudioInputStream audioInputStream;
+        WavObj wavObj = null;
+		try {
+			audioInputStream = AudioSystem.getAudioInputStream(fileRead);
+			AudioFormat format = audioInputStream.getFormat();
+		    long audioFileLength = fileRead.length();
+		    short[] signal = readWave(fileRead);
+		    
+		    wavObj = new WavObj(format, audioFileLength, signal);
+	        audioInputStream.close();
+		} catch (UnsupportedAudioFileException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+        return wavObj;
+    }
+    
     /**
      * loading wave file<br>
      * calls: none<br>
@@ -91,13 +114,17 @@ public class WaveIO {
      * @param path of the input wave file
      * @return a short array of anysize containing the amplitudes in the wave file
      */
-    public short[] readWave(String path){
-
-
+    public short[] readWave(String path) {
+        File fileRead = new File(path);
+        return readWave(fileRead);
+    }
+    
+   
+    public short[] readWave(File fileRead){
         /**
          * define a file object with the location given
          */
-        File fileRead = new File(path);
+        
 
         /**
          * initial buffer size

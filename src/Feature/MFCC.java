@@ -78,15 +78,26 @@ public class MFCC{
 
 
     public MFCC(int frameLength){
-        if(!Stats.isPowerOf(frameLength, 2)){
-            System.err.println("Please ensure frameLength is the power of 2!");
-            System.exit(1);
-        }
-        this.frameLength = frameLength;
-        fftSize = frameLength;
-
-
+        setFrameLength(frameLength);
     }
+
+
+
+	/**
+	 * @param frameLength
+	 */
+	public void setFrameLength(int frameLength) {
+		if(!Stats.isPowerOf(frameLength, 2)){
+            System.err.println("Please ensure frameLength is the power of 2!");
+            return;
+        }
+		this.frameLength = frameLength;
+        fftSize = frameLength;
+        shiftInterval = frameLength / 2;
+	}
+    
+		
+    
 
     public double[] getMeanFeature(){
         return mean;
@@ -339,7 +350,7 @@ public class MFCC{
         }
 
         frames = new double[(int)numFrames][frameLength];
-
+  
         // break down speech signal into frames with specified shift interval to create overlap
         for (int m = 0; m < numFrames; m++){
             for (int n = 0; n < frameLength; n++){

@@ -3,6 +3,7 @@ import Feature.Energy;
 import Feature.MFCC;
 import Feature.MagnitudeSpectrum;
 import Feature.ZeroCrossing;
+import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
 import Distance.Bhattacharyya;
 import Distance.Chebychev;
@@ -17,11 +18,49 @@ import Distance.RBFKernel;
  */
 public class FeatureExtraction {
     public static void main(String[] args){
-        WaveIO waveIO1 = new WaveIO();
-        short[] signals1 = waveIO1.readWave("data/input/test/office/office102.wav");
+    	testNewMfccMethod();
+        //demoUseOfDifferentFeaturesAndDistance();
+    }
+
+	/**
+	 * 
+	 */
+	public static void testNewMfccMethod() {
+		WaveIO waveIO = new WaveIO();
+    	WavObj waveObj = waveIO.constructWavObj("data/input/emotionTest/COLD_angry1.wav");
+    	System.out.println(waveObj.getFileLength());
+    	System.out.println(waveObj.getSignal().length);
+    	System.out.println(waveObj.getNumOfFrames());
+    	
+    	int powerOfTwo = 1;
+    	for (int i = 0; i < 15; i++) {
+    		powerOfTwo = powerOfTwo << 1;
+    	}
+    	
+    	MFCC mfcc = new MFCC(powerOfTwo);
+        double[][] MFCC = mfcc.process(waveObj.getSignal());//13-d mfcc
+
+        int numOfRows = MFCC.length;
+        int numOfColumn = MFCC[0].length;
+        System.out.println(numOfRows);
+        System.out.println(numOfColumn);
+        
+        double timePerFrame = waveObj.getFileDuration() / numOfRows;
+        System.out.println("powerOfTwo: " + powerOfTwo);
+        System.out.println("time/frame: " + timePerFrame);
+	}
+
+	/**
+	 * 
+	 */
+	public static void demoUseOfDifferentFeaturesAndDistances() {
+		WaveIO waveIO1 = new WaveIO();
+        short[] signals1 = waveIO1.readWave("data/input/emotionTest/COLD_angry1.wav");
 
         WaveIO waveIO2 = new WaveIO();
-        short[] signals2 = waveIO2.readWave("data/input/test/bus/bus80.wav");
+        short[] signals2 = waveIO2.readWave("data/input/emotionTest/Ses01F_impro02.wav");
+        
+        System.out.println("signals1: " + signals1.length);
 
         Energy energy1 = new Energy();
         double[] eFeature1 = energy1.getFeature(signals1);
@@ -35,7 +74,7 @@ public class FeatureExtraction {
         MagnitudeSpectrum ms2 = new MagnitudeSpectrum();
         double[] msFeature2 = ms2.getFeature(signals2);
 
-        MFCC mfcc = new MFCC();
+        MFCC mfcc = new MFCC(512);
         double[][] MFCC = mfcc.process(signals1);//13-d mfcc
 
         double[] mean = mfcc.getMeanFeature();
@@ -83,5 +122,5 @@ public class FeatureExtraction {
         System.out.println(bb);
         System.out.println(ch);
         System.out.println(rbf);
-    }
+	}
 }
