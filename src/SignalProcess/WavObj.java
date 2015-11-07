@@ -54,6 +54,17 @@ public class WavObj {
         return numOfFrames;
 	}
 	
+	public void removeSignalsWithinSeconds(double second) {
+		int frameSize = _wavFormat.getFrameSize();
+        float frameRate = _wavFormat.getFrameRate();
+		int fileLengthForTurn = (int) (frameSize * frameRate * second / SHORT_TO_BYTE);
+		short[] tempSignal = new short[_signal.length - fileLengthForTurn];
+		for (int i = 0; i < tempSignal.length; i++) {
+			tempSignal[i] = _signal[i + fileLengthForTurn];
+		}
+		_signal = tempSignal;
+	}
+	
 	public Vector<short[]> splitToSignals() {
 		return splitToSignals(TIME_TURN);
 	}

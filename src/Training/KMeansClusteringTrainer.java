@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
-import Distance.Euclidean;
+import Distance.Cosine;
 import Feature.MFCC;
 import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
@@ -16,7 +16,7 @@ public class KMeansClusteringTrainer {
 	private int[] _numOfClusterPoints;
 	private Vector <double[]> _meanClusterPoints;
 	
-	private static final int DEFAULT_K = 6; // sqrt(121/2)
+	private static final int DEFAULT_K = 5; // sqrt(121/2)
 	private static final int DEFAULT_DIM = 12;
 	
 	public static final String DIR_TRAINING_FILES = "data/input/IEMOCAP_database";
@@ -55,7 +55,7 @@ public class KMeansClusteringTrainer {
 			double[] initialPoint = new double[dim];
 			Vector <double[]> points = new Vector < double[] >();
 			for (int j = 0; j < dim; j++) {
-				initialPoint[j] = 0.01 * i;
+				initialPoint[j] = 0.25 * i;
 			}
 			points.add(initialPoint);
 			_numOfClusterPoints[i] = 1;
@@ -96,11 +96,11 @@ public class KMeansClusteringTrainer {
 	 * @return
 	 */
 	private int getNearestClusterIndex(double[] data) {
-		Euclidean euclidean = Euclidean.getObject();
+		Cosine cos = new Cosine();
 		double minDistance = 0;
 		int chosenIndex = 0;
 		for (int i = 0; i < _k; i++) {
-			double distance = euclidean.getDistance(data, _meanClusterPoints.get(i));
+			double distance = cos.getDistance(data, _meanClusterPoints.get(i));
 			if (i == 0) {
 				minDistance = distance;
 			} else if (minDistance > distance) {
@@ -163,7 +163,7 @@ public class KMeansClusteringTrainer {
 	 */
 	public static int getFrameSizeThatApproxOneSecond() {
 		int powerOfTwo = 1;
-    	for (int i = 0; i < 9; i++) {
+    	for (int i = 0; i < 16; i++) {
     		powerOfTwo = powerOfTwo << 1;
     	}
 		return powerOfTwo;
@@ -181,8 +181,9 @@ public class KMeansClusteringTrainer {
     	MFCC mfcc = new MFCC(powerOfTwo);
 
 		for (int i = 0; i < trainingFiles.length; i++) {
-			System.out.println("i: " + trainingFiles[i].getName());
+			System.out.println(i + ": " + trainingFiles[i].getName());
 			WavObj waveObj = waveIO.constructWavObj(trainingFiles[i].getAbsolutePath());
+			waveObj.removeSignalsWithinSeconds(2);
 			Vector <short[]> signals = waveObj.splitToSignals();
 			for (int j = 0; j < signals.size(); j++) {
 				mfcc.process(signals.get(j));//13-d mfcc

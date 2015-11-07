@@ -3,12 +3,13 @@ package Search;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
 import Training.KMeansClusteringTrainer;
-import Distance.Euclidean;
+import Distance.Cosine;
 import Feature.MFCC;
 
 public class KMeansClusteringClassifier {
@@ -17,14 +18,28 @@ public class KMeansClusteringClassifier {
 	private Vector <double[]> _meanClusterPoints;
 	
 	public static final String DIR_TESTING_FILES = "data/input/emotionTest";
+	public static final String DIR_GRUNDTRUTH = "data/input/IEMOCAP_grundtruth/";
+	public static final String FILE_CLUSTER_MODEL = "data/feature/clusterModel.txt";
+	public static final String EXT_WAV = ".wav";
+	public static final String EXT_GRUNDTRUTH = "_cat.txt";
+	public static final String AVG_GRUNDTRUTH = "_overall" + EXT_GRUNDTRUTH;
+	public static final String[] EVALUATORS = {"_e1", "_e2", "_e3", "_e4"};
+	public static final String[] EMOTIONS = {"Neutral state", "Fear", "Happiness", "Disgust", "Sadness",
+											 "Frustration", "Anger", "Excited", "Surprise", "Other"};
+	public static final int INDEX_EMOTION_NOT_EXIST = 10;
 
 
 	
 	public KMeansClusteringClassifier(String filename) {
-		readFromFile(filename);
+		readClusters(filename);
+	}
+	
+
+	public int getK() {
+		return _k;
 	}
 
-	private void readFromFile(String filename) {
+	private void readClusters(String filename) {
 		_meanClusterPoints = new Vector <double[]>();
 		try{
             FileReader fr = new FileReader(filename);
@@ -60,11 +75,11 @@ public class KMeansClusteringClassifier {
 			return -1;
 		}
 		
-		Euclidean euclidean = Euclidean.getObject();
+		Cosine cos = new Cosine();
 		double minDistance = 0;
 		int chosenIndex = 0;
 		for (int i = 0; i < _k; i++) {
-			double distance = euclidean.getDistance(data, _meanClusterPoints.get(i));
+			double distance = cos.getDistance(data, _meanClusterPoints.get(i));
 			if (i == 0) {
 				minDistance = distance;
 			} else if (minDistance > distance) {
@@ -74,7 +89,9 @@ public class KMeansClusteringClassifier {
 		}
 		return chosenIndex;
 	}
-    
+	
+
+	
 	
 	public static void main (String[] args) {
 		String fileName = KMeansClusteringTrainer.FILE_MODEL;
@@ -91,10 +108,14 @@ public class KMeansClusteringClassifier {
 		
 		showClusters(classifier, waveIO, mfcc, testingFiles);
 		*/
+    	TreeMap <String, Integer> emotionIndex = new TreeMap<String, Integer>();
+    	for (int i = 0; i < EMOTIONS.length; i++) {
+    		emotionIndex.put(EMOTIONS[i], i);
+    	}
 		
     	File trainingDir = new File(KMeansClusteringTrainer.DIR_TRAINING_FILES);
 		File[] trainingFiles = trainingDir.listFiles();
-		showClusters(classifier, waveIO, mfcc, trainingFiles);
+		showClusters(classifier, waveIO, mfcc, trainingFiles, emotionIndex);
 	}
 
 	/**
@@ -102,23 +123,99 @@ public class KMeansClusteringClassifier {
 	 * @param waveIO
 	 * @param mfcc
 	 * @param files
+	 * @param emotionIndex 
 	 */
 	private static void showClusters(KMeansClusteringClassifier classifier,
-			WaveIO waveIO, MFCC mfcc, File[] files) {
+			WaveIO waveIO, MFCC mfcc, File[] files, TreeMap<String, Integer> emotionIndex) {
+		int clusterToEmotion[][] = new int[classifier.getK()][EMOTIONS.length + 1];
+		for (int i = 0; i < clusterToEmotion.length; i++) {
+			for (int j = 0; j < clusterToEmotion[0].length; j++) {
+				clusterToEmotion[i][j] = 0;
+			}
+		}
 		
 		for (int i = 0; i < files.length; i++) {
-			System.out.println(files[i].getName());
+			String name = files[i].getName();
+			Vector < Vector <String> > grundtruthEmotions = new Vector < Vector <String> >();
+			for (int j = 0; j < EVALUATORS.length; j++) {
+				String grundtruthName = DIR_GRUNDTRUTH + name.replace(EXT_WAV, EVALUATORS[j] + EXT_GRUNDTRUTH);
+				File file = new File(grundtruthName);
+				if (file.exists()) {
+					Vector <String> emotion = readEmotion(grundtruthName);
+					grundtruthEmotions.add(emotion);
+				}
+			}
+			
 			WavObj waveObj = waveIO.constructWavObj(files[i].getAbsolutePath());
+			waveObj.removeSignalsWithinSeconds(2);
 			Vector <short[]> signals = waveObj.splitToSignals();
+			int[] clusterIndexes = new int[signals.size()];
 			for (int j = 0; j < signals.size(); j++) {
 				mfcc.process(signals.get(j));//13-d mfcc
 				double[] meanMfcc = mfcc.getMeanFeature();
 				int index = classifier.calculateNearestCluster(meanMfcc);
-				System.out.print(index + " ");
+				clusterIndexes[j] = index;
 			}
+			
+			for (int k = 0; k < Math.min(clusterIndexes.length, grundtruthEmotions.get(0).size()); k++) {
+				int[] temp = new int[EMOTIONS.length + 1];
+				for (int j = 0; j < temp.length; j++) {
+					temp[j] = 0;
+				}
+				for (int j = 0; j < grundtruthEmotions.size(); j++) {
+					Vector <String> emotions = grundtruthEmotions.get(j);
+					String emotion = emotions.get(k);
+					int emotionIdx = INDEX_EMOTION_NOT_EXIST;
+					if (emotionIndex.containsKey(emotion)) {
+						emotionIdx = emotionIndex.get(emotion);
+					}
+					temp[emotionIdx]++;
+				}
+				int max = temp[0];
+				int chosenIndex = 0;
+				for (int j = 1; j < temp.length; j++) {
+					if (max < temp[j]) {
+						max = temp[j];
+						chosenIndex = j;
+					}
+				}
+				clusterToEmotion[clusterIndexes[k]][chosenIndex]++;
 
-			System.out.println("end");
-
+			} 
 		}
+		
+		for (int i = 0; i < clusterToEmotion.length; i++) {
+			System.out.print("index: " + i + " ");
+
+			for (int j = 0; j < clusterToEmotion[0].length; j++) {
+				String emo = "Not exist";
+				if (j < INDEX_EMOTION_NOT_EXIST) {
+					emo = EMOTIONS[j];
+				}
+				System.out.print(emo + ": " + clusterToEmotion[i][j] + " ");
+			}
+			System.out.println("");
+		}
+	}
+	
+	private static Vector <String> readEmotion(String filename) {
+		Vector <String> emotions = new Vector <String>();
+		try{
+            FileReader fr = new FileReader(filename);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line = br.readLine();
+            while(line != null){
+            	int beginIndex = line.indexOf(":");
+            	int endIndex = line.indexOf(";");
+            	String emotion = line.substring(beginIndex + 1, endIndex).trim();
+            	emotions.add(emotion);
+                line = br.readLine();
+            }
+            br.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }		
+		return emotions;
 	}
 }
