@@ -55,14 +55,37 @@ public class WavObj {
 	}
 	
 	public void removeSignalsWithinSeconds(double second) {
+		_signal = getSignalWithoutFirstFewSeconds(second);
+	}
+	
+	public short[] getSignalWithFirstFewSeconds(double second) {
+		return getSignalWithFirstFewSeconds(second, _signal);
+	}
+	
+	public short[] getSignalWithFirstFewSeconds(double second, short[] originalSignal) {
 		int frameSize = _wavFormat.getFrameSize();
         float frameRate = _wavFormat.getFrameRate();
 		int fileLengthForTurn = (int) (frameSize * frameRate * second / SHORT_TO_BYTE);
-		short[] tempSignal = new short[_signal.length - fileLengthForTurn];
+		short[] tempSignal = new short[fileLengthForTurn];
 		for (int i = 0; i < tempSignal.length; i++) {
-			tempSignal[i] = _signal[i + fileLengthForTurn];
+			tempSignal[i] = originalSignal[i];
 		}
-		_signal = tempSignal;
+		return tempSignal;
+	}
+	
+	public short[] getSignalWithoutFirstFewSeconds(double second) {
+		return getSignalWithoutFirstFewSeconds(second, _signal);
+	}
+	
+	public short[] getSignalWithoutFirstFewSeconds(double second, short[] originalSignal) {
+		int frameSize = _wavFormat.getFrameSize();
+        float frameRate = _wavFormat.getFrameRate();
+		int fileLengthForTurn = (int) (frameSize * frameRate * second / SHORT_TO_BYTE);
+		short[] tempSignal = new short[originalSignal.length - fileLengthForTurn];
+		for (int i = 0; i < tempSignal.length; i++) {
+			tempSignal[i] = originalSignal[i + fileLengthForTurn];
+		}
+		return tempSignal;
 	}
 	
 	public Vector<short[]> splitToSignals() {
@@ -72,7 +95,7 @@ public class WavObj {
 	/**
 	 * @return
 	 */
-	private Vector<short[]> splitToSignals(double turnTime) {
+	public Vector<short[]> splitToSignals(double turnTime) {
 		int frameSize = _wavFormat.getFrameSize();
         float frameRate = _wavFormat.getFrameRate();
 		int fileLengthForTurn = (int) (frameSize * frameRate * turnTime / SHORT_TO_BYTE);

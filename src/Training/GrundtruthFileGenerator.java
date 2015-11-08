@@ -56,19 +56,14 @@ public class GrundtruthFileGenerator {
 			String name = wavFiles[i].getName();
 			Vector < Vector <String> > grundtruthEmotions = new Vector < Vector <String> >();
 			for (int j = 0; j < KMeansClusteringClassifier.EVALUATORS.length; j++) {
-				String grundtruthName = KMeansClusteringClassifier.DIR_GRUNDTRUTH + 
-						name.replace(KMeansClusteringClassifier.EXT_WAV, 
-								KMeansClusteringClassifier.EVALUATORS[j] + 
-								KMeansClusteringClassifier.EXT_GRUNDTRUTH);
+				String grundtruthName = getGrundtruthName(name, j);
 				File file = new File(grundtruthName);
 				if (file.exists()) {
 					Vector <String> emotion = readEmotion(grundtruthName);
 					grundtruthEmotions.add(emotion);
 				}
 			}
-			String filename = KMeansClusteringClassifier.DIR_GRUNDTRUTH + 
-					name.replace(KMeansClusteringClassifier.EXT_WAV, 
-							KMeansClusteringClassifier.AVG_GRUNDTRUTH);
+			String filename = getAvgGrundtruthFilename(name);
 			writeToFile(filename, false, "");
 
 
@@ -94,15 +89,40 @@ public class GrundtruthFileGenerator {
 						chosenIndex = j;
 					}
 				}
-				writeToFile(filename, true, KMeansClusteringClassifier.EMOTIONS[chosenIndex] + "\n");
+				writeToFile(filename, true, filename + "_" + k +
+						":" + KMeansClusteringClassifier.EMOTIONS[chosenIndex] + ";\n");
 			} 
 			
 		}
 		
 		
 	}
+
+	/**
+	 * @param name
+	 * @return
+	 */
+	public String getAvgGrundtruthFilename(String name) {
+		String filename = KMeansClusteringClassifier.DIR_GRUNDTRUTH + 
+				name.replace(KMeansClusteringClassifier.EXT_WAV, 
+						KMeansClusteringClassifier.AVG_GRUNDTRUTH);
+		return filename;
+	}
+
+	/**
+	 * @param name
+	 * @param j
+	 * @return
+	 */
+	private String getGrundtruthName(String name, int j) {
+		String grundtruthName = KMeansClusteringClassifier.DIR_GRUNDTRUTH + 
+				name.replace(KMeansClusteringClassifier.EXT_WAV, 
+						KMeansClusteringClassifier.EVALUATORS[j] + 
+						KMeansClusteringClassifier.EXT_GRUNDTRUTH);
+		return grundtruthName;
+	}
 	
-	private Vector <String> readEmotion(String filename) {
+	public Vector <String> readEmotion(String filename) {
 		Vector <String> emotions = new Vector <String>();
 		try{
             FileReader fr = new FileReader(filename);
