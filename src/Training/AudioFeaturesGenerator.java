@@ -5,9 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Vector;
 
+import Evaluation.EvaluationFacade;
 import Feature.Energy;
 import Feature.MFCC;
 import Feature.MagnitudeSpectrum;
@@ -26,6 +27,7 @@ public class AudioFeaturesGenerator {
 	public static final String EMOTION_ENERGY = FILEPATH_FEATURE_OUT + "/emotion_energy.txt";
 	public static final String EMOTION_MFCC = FILEPATH_FEATURE_OUT + "/emotion_mfcc.txt";
 	
+	public static final String FILEPATH_AUDIO_IEMOCAP_SEGMENT = "data/input/IEMOCAP_segment/";
 	public static final String FILEPATH_AUDIO_IEMOCAP_TRAIN = "data/input/IEMOCAP_database";
 	public static final String FILEPATH_AUDIO_IEMOCAP_LABEL = "data/input/IEMOCAP_label/";
 	public static final String EMOTION_IEMOCAP_MFCC = FILEPATH_FEATURE_OUT + "/emotion_iemocap_mfcc.txt";
@@ -63,7 +65,7 @@ public class AudioFeaturesGenerator {
 	public boolean computeIemocapLabelMFCC(File[] audioFiles, String filename) {
 		writeToFile(filename, false, "");
 		
-		HashSet <String> emotions = new HashSet <String>();
+		HashMap <String, String> emotions = EvaluationFacade.getIemocapEmotionHashMap();	
 		for (int i = 0; i < audioFiles.length; i++) {
 			String audioName = audioFiles[i].getAbsolutePath();
 			String audioFileName = audioFiles[i].getName();
@@ -84,23 +86,24 @@ public class AudioFeaturesGenerator {
 				
 				String nameAndEmotion = tokens[1].trim();
 				String emotion = nameAndEmotion.split(" ")[1].trim();
+								
+				short[] signal = obj.getSignalWithoutFirstFewSeconds(startTime);
+				signal = obj.getSignalWithFirstFewSeconds(endTime - startTime, signal);
+				
+				String displayName = audioFileName.replace(AudioFeaturesGenerator.EXT_WAV, 
+						"__" + j + "_" + emotions.get(emotion) + AudioFeaturesGenerator.EXT_WAV);
+				waveio.writeWave(signal, FILEPATH_AUDIO_IEMOCAP_SEGMENT + displayName);
+
 				
 				if (emotion.equals("xxx")) {
 					continue;
 				}
-				
-				emotions.add(emotion);
-				
-				short[] signal = obj.getSignalWithoutFirstFewSeconds(startTime);
-				signal = obj.getSignalWithFirstFewSeconds(endTime - startTime, signal);
 				
 				MFCC mfcc = new MFCC();
 				mfcc.process(signal);
 				double[] mean = mfcc.getMeanFeature();
 				StringBuffer buffer = new StringBuffer();
 			
-				String displayName = audioFileName.replace(AudioFeaturesGenerator.EXT_WAV, 
-						"__" + j + "_" + emotion + AudioFeaturesGenerator.EXT_WAV);
 				buffer.append(displayName);
 
 				
@@ -113,9 +116,6 @@ public class AudioFeaturesGenerator {
 					return false;
 				}
 			}
-		}
-		for (String s : emotions) {
-		    System.out.println(s);
 		}
 		return true;
 	}
@@ -191,6 +191,10 @@ public class AudioFeaturesGenerator {
 		writeToFile(filename, false, "");
 		for (int i = 0; i < audioFiles.length; i++) {
 			String audioName = audioFiles[i].getAbsolutePath();
+			
+			if (audioName.endsWith("null.wav")) {
+				continue;
+			}
 			WaveIO waveio = new WaveIO();
 			short[] signal = waveio.readWave(audioName);
 			
@@ -337,12 +341,14 @@ public class AudioFeaturesGenerator {
 
 		//trainAudio(featureGenerator);
 		//trainEmotion(featureGenerator);
-		trainIemocapEmotion(featureGenerator);
+		//trainIemocapEmotion(featureGenerator);
+		trainIemocapSegmentedEmotion(featureGenerator);
 	}
 	
 	/**
 	 * @param featureGenerator
 	 */
+	@SuppressWarnings("unused")
 	private static void trainIemocapEmotion(AudioFeaturesGenerator featureGenerator) {
 		File emotionTrain = new File(KMeansClusteringTrainer.DIR_TRAINING_FILES);
 		File[] emotionFiles = emotionTrain.listFiles();
@@ -351,6 +357,20 @@ public class AudioFeaturesGenerator {
 		
 
 		if (!featureGenerator.computeIemocapLabelMFCC(emotionFiles, emotionMfccFile.getAbsolutePath())) {
+			System.exit(-1);
+		}
+		
+		
+	}
+	
+	private static void trainIemocapSegmentedEmotion(AudioFeaturesGenerator featureGenerator) {
+		File emotionTrain = new File(FILEPATH_AUDIO_IEMOCAP_SEGMENT);
+		File[] emotionFiles = emotionTrain.listFiles();
+
+		File emotionMfccFile = featureGenerator.createFile(AudioFeaturesGenerator.EMOTION_IEMOCAP_MFCC);
+		
+
+		if (!featureGenerator.computeMFCC(emotionFiles, emotionMfccFile.getAbsolutePath())) {
 			System.exit(-1);
 		}
 		

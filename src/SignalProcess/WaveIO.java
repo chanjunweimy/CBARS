@@ -50,7 +50,7 @@ public class WaveIO {
     /**
      * audio format
      */
-    public final static AudioFormat FORMAT = new AudioFormat(SAMPLE_ENCODING, SAMPLE_RATE,SAMPLE_BITS,SAMPLE_CHANNELS,SAMPLE_FRAME_SIZE,SAMPLE_FRAME_RATE,SAMPLE_BIG_ENDIAN);
+    private AudioFormat FORMAT = new AudioFormat(SAMPLE_ENCODING, SAMPLE_RATE,SAMPLE_BITS,SAMPLE_CHANNELS,SAMPLE_FRAME_SIZE,SAMPLE_FRAME_RATE,SAMPLE_BIG_ENDIAN);
 
     /**
      * write to wave file<br>
@@ -65,15 +65,15 @@ public class WaveIO {
         byte sampleByte[] = new byte[sample.length * 2];
 
         for (int c=0; c < sample.length; c++){
-            sampleByte[2 * c] = (byte)sample[c];
-            sampleByte[2 * c + 1] = (byte)(sample[c]>>8);
+            sampleByte[2 * c] = (byte) (sample[c] & 0xff);
+            sampleByte[2 * c + 1] = (byte)((sample[c]>>8) & 0xff);
         }
 
 
         try {
             ByteArrayInputStream sampleByteArrayInputStream = new ByteArrayInputStream(sampleByte);
             AudioInputStream sampleAudioInputStream = new AudioInputStream (sampleByteArrayInputStream, FORMAT, sampleByte.length / SAMPLE_FRAME_SIZE);
-            if (AudioSystem.write(sampleAudioInputStream, AudioFileFormat.Type.WAVE, new File(path + ".wav")) == -1){
+            if (AudioSystem.write(sampleAudioInputStream, AudioFileFormat.Type.WAVE, new File(path)) == -1){
                 System.out.println("Unable to write to file");
             }
 /*
@@ -120,6 +120,7 @@ public class WaveIO {
     }
     
    
+   
     public short[] readWave(File fileRead){
         /**
          * define a file object with the location given
@@ -129,8 +130,8 @@ public class WaveIO {
         /**
          * initial buffer size
          */
-        int byteRead = 16000 * 2;
-
+       int byteRead = 16000 * 2;
+    	
         /**
          * array used to temporary store the read data
          */
@@ -156,16 +157,18 @@ public class WaveIO {
              * open the wave file
              */
             AudioInputStream readAudioInputStream = AudioSystem.getAudioInputStream(fileRead);
-
+            FORMAT = readAudioInputStream.getFormat();
+            
             while ((numByteRead = readAudioInputStream.read(waveByte, 0, waveByte.length)) != -1){
                 readByteArrayOutputStream.write(waveByte,0,numByteRead);
+
             }
 
             /**
              * temporary array to store data in readByteArrayOutputStream
              */
             byte tempWaveByte[] = readByteArrayOutputStream.toByteArray();
-
+                       
             waveShort = new short[tempWaveByte.length / 2];
 
             //convert 2 bytes into a short

@@ -49,11 +49,8 @@ public class SvmEmotionClassifier {
 		double value = svm.svm_predict(_model, queryFeature);
 		int label = (int) value;
 		label--;
-
-		System.out.println(value);
-		System.out.println(label);
 		
-		String[] tags = EvaluationFacade.EMOTION_TAGS;
+		String[] tags = EvaluationFacade.EMOTION_IEMOCAP_TAGS;
 		if (label < 0) {
 			label = 0;
 		} else if (label > tags.length - 1) {

@@ -863,16 +863,21 @@ public class SearchDemo {
     	WaveIO waveIO = new WaveIO();
 
         short[] inputSignal = waveIO.readWave(query);
-        MFCC ms = new MFCC();
+        return classifyEmotion(inputSignal);
+    }
+
+	/**
+	 * @param inputSignal
+	 * @return
+	 */
+	public String classifyEmotion(short[] inputSignal) {
+		MFCC ms = new MFCC();
         ms.process(inputSignal);
         double[] msFeature1 = ms.getMeanFeature();
         SvmEmotionClassifier classifier = Search.SvmEmotionClassifier.getObject();
         String emotion = classifier.classifyEmotion(msFeature1);
-        if (emotion.equals("ps")) {
-        	emotion = "pleasant surprise";
-        }
     	return emotion;
-    }
+	}
 
     public static void main(String[] args){
         SearchDemo searchDemo = new SearchDemo();

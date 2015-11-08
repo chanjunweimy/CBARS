@@ -27,27 +27,12 @@ public class FeatureExtraction {
 	 */
 	public static void testNewMfccMethod() {
 		WaveIO waveIO = new WaveIO();
-    	WavObj waveObj = waveIO.constructWavObj("data/input/emotionTest/COLD_angry1.wav");
-    	System.out.println(waveObj.getFileLength());
-    	System.out.println(waveObj.getSignal().length);
-    	System.out.println(waveObj.getNumOfFrames());
-    	
-    	int powerOfTwo = 1;
-    	for (int i = 0; i < 15; i++) {
-    		powerOfTwo = powerOfTwo << 1;
-    	}
-    	
-    	MFCC mfcc = new MFCC(powerOfTwo);
-        double[][] MFCC = mfcc.process(waveObj.getSignal());//13-d mfcc
-
-        int numOfRows = MFCC.length;
-        int numOfColumn = MFCC[0].length;
-        System.out.println(numOfRows);
-        System.out.println(numOfColumn);
-        
-        double timePerFrame = waveObj.getFileDuration() / numOfRows;
-        System.out.println("powerOfTwo: " + powerOfTwo);
-        System.out.println("time/frame: " + timePerFrame);
+    	//WavObj waveObj = waveIO.constructWavObj("data/input/IEMOCAP_database/Ses01F_impro01.wav");
+    	short[] signal = null;
+    	//signal = waveObj.getSignal();
+    	signal = waveIO.readWave("data/input/IEMOCAP_database/Ses01F_impro01.wav");
+    	//waveObj.removeSignalsWithinSeconds(1);
+    	waveIO.writeWave(signal, "data/input/test.wav");
 	}
 
 	/**
