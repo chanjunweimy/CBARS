@@ -5,6 +5,7 @@ import java.util.Vector;
 import javax.sound.sampled.AudioFormat;
 
 public class WavObj {
+	private static final double TIME_SILENCE_SPLIT_INTERVAL = 1;
 	private AudioFormat _wavFormat;
 	private long _audioFileLength;
 	private short[] _signal;
@@ -54,6 +55,63 @@ public class WavObj {
         return numOfFrames;
 	}
 	
+	public short[] trimSilence(short[] originalSignal) {
+		originalSignal = trimSilenceBegining(originalSignal);
+		originalSignal = trimSilenceEnd(originalSignal);
+		return originalSignal;
+	}
+	
+	public short[] trimSilenceEnd(short[] originalSignal) {
+		originalSignal = reverse(originalSignal);
+		originalSignal = trimSilenceBegining(originalSignal);
+		originalSignal = reverse(originalSignal);
+		return originalSignal;
+	}
+	
+	public short[] reverse(short[] originalSignal) {
+		for (int i = 0; i < originalSignal.length / 2; i++) {
+		  short temp = originalSignal[i];
+		  originalSignal[i] = originalSignal[originalSignal.length - 1 - i];
+		  originalSignal[originalSignal.length - 1 - i] = temp;
+		}
+		return originalSignal;
+	}
+	
+	public short[] trimSilenceBegining(short[] originalSignal) {
+		int frameSize = _wavFormat.getFrameSize();
+        float frameRate = _wavFormat.getFrameRate();
+        double durationInSeconds = (originalSignal.length * 2 / (frameSize * frameRate));
+		
+		double threshold = 250;
+		double time = 0;
+		while (true) {
+			double splitIntervalTime = WavObj.TIME_SILENCE_SPLIT_INTERVAL;
+			time += WavObj.TIME_SILENCE_SPLIT_INTERVAL;
+			short[] samples = getSignalWithFirstFewSeconds(splitIntervalTime, originalSignal);
+			double sumOfSquares = 0;
+		    for (int i = 0; i < samples.length; i++) {
+		        sumOfSquares = sumOfSquares + samples[i] * samples[i];
+		    }
+		    int numberOfSamples = samples.length;
+		    double rms = Math.sqrt(sumOfSquares / (numberOfSamples));
+		    
+		    if (rms - threshold >= 0 || time >= durationInSeconds) {
+		    	break;
+		    }
+		    
+		    originalSignal = getSignalWithoutFirstFewSeconds(splitIntervalTime, originalSignal);
+		} 
+		return originalSignal;
+	}
+	
+	public boolean isShort(short[] signal) {
+		int frameSize = _wavFormat.getFrameSize();
+        float frameRate = _wavFormat.getFrameRate();
+        double durationInSeconds = (signal.length * 2 / (frameSize * frameRate));
+        
+        return durationInSeconds - 1 < 0;
+	}
+	
 	public void removeSignalsWithinSeconds(double second) {
 		_signal = getSignalWithoutFirstFewSeconds(second);
 	}
@@ -65,6 +123,12 @@ public class WavObj {
 	public short[] getSignalWithFirstFewSeconds(double second, short[] originalSignal) {
 		int frameSize = _wavFormat.getFrameSize();
         float frameRate = _wavFormat.getFrameRate();
+        double durationInSeconds = (originalSignal.length * 2 / (frameSize * frameRate));
+        
+        if (durationInSeconds <= second) {
+        	return originalSignal;
+        }
+        
 		int fileLengthForTurn = (int) (frameSize * frameRate * second / SHORT_TO_BYTE);
 		short[] tempSignal = new short[fileLengthForTurn];
 		for (int i = 0; i < tempSignal.length; i++) {
@@ -80,6 +144,12 @@ public class WavObj {
 	public short[] getSignalWithoutFirstFewSeconds(double second, short[] originalSignal) {
 		int frameSize = _wavFormat.getFrameSize();
         float frameRate = _wavFormat.getFrameRate();
+        double durationInSeconds = (originalSignal.length * 2 / (frameSize * frameRate));
+        
+        if (durationInSeconds <= second) {
+        	return originalSignal;
+        }
+        
 		int fileLengthForTurn = (int) (frameSize * frameRate * second / SHORT_TO_BYTE);
 		short[] tempSignal = new short[originalSignal.length - fileLengthForTurn];
 		for (int i = 0; i < tempSignal.length; i++) {

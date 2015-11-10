@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
-import Distance.Cosine;
+import Distance.Euclidean;
 import Feature.MFCC;
 import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
@@ -16,10 +16,11 @@ public class KMeansClusteringTrainer {
 	private int[] _numOfClusterPoints;
 	private Vector <double[]> _meanClusterPoints;
 	
-	private static final int DEFAULT_K = 5; // sqrt(121/2)
+	private static final int DEFAULT_K = 4; // sqrt(121/2)
 	private static final int DEFAULT_DIM = 12;
 	
 	public static final String DIR_TRAINING_FILES = "data/input/IEMOCAP_database";
+	public static final String DIR_SEGMENTED_FILES = "data/input/IEMOCAP_segment";
 	public static final String FILE_MODEL = "data/feature/kmeanclusteringmodel.txt";
 	
 	public KMeansClusteringTrainer() {
@@ -55,7 +56,7 @@ public class KMeansClusteringTrainer {
 			double[] initialPoint = new double[dim];
 			Vector <double[]> points = new Vector < double[] >();
 			for (int j = 0; j < dim; j++) {
-				initialPoint[j] = 0.25 * i;
+				initialPoint[j] = 0.3 * i;
 			}
 			points.add(initialPoint);
 			_numOfClusterPoints[i] = 1;
@@ -96,11 +97,11 @@ public class KMeansClusteringTrainer {
 	 * @return
 	 */
 	private int getNearestClusterIndex(double[] data) {
-		Cosine cos = new Cosine();
+		Euclidean euc = Euclidean.getObject();
 		double minDistance = 0;
 		int chosenIndex = 0;
 		for (int i = 0; i < _k; i++) {
-			double distance = cos.getDistance(data, _meanClusterPoints.get(i));
+			double distance = euc.getDistance(data, _meanClusterPoints.get(i));
 			if (i == 0) {
 				minDistance = distance;
 			} else if (minDistance > distance) {
@@ -172,7 +173,7 @@ public class KMeansClusteringTrainer {
 	public static void main (String[] args) {
 		KMeansClusteringTrainer machineLearning = new KMeansClusteringTrainer();
 		
-		File trainingDir = new File(DIR_TRAINING_FILES);
+		File trainingDir = new File(DIR_SEGMENTED_FILES);
 		File[] trainingFiles = trainingDir.listFiles();
 		
 		int powerOfTwo = getFrameSizeThatApproxOneSecond();
@@ -183,15 +184,15 @@ public class KMeansClusteringTrainer {
 		for (int i = 0; i < trainingFiles.length; i++) {
 			System.out.println(i + ": " + trainingFiles[i].getName());
 			WavObj waveObj = waveIO.constructWavObj(trainingFiles[i].getAbsolutePath());
-			waveObj.removeSignalsWithinSeconds(2);
-			Vector <short[]> signals = waveObj.splitToSignals();
-			for (int j = 0; j < signals.size(); j++) {
-				mfcc.process(signals.get(j));//13-d mfcc
-				double[] meanMfcc = mfcc.getMeanFeature();
-				if (!machineLearning.train(meanMfcc)) {
-					return;
-				}
+			//waveObj.removeSignalsWithinSeconds(2);
+			//Vector <short[]> signals = waveObj.splitToSignals();
+			short[] signal = waveObj.getSignal();
+			mfcc.process(signal);
+			double[] meanMfcc = mfcc.getMeanFeature();
+			if (!machineLearning.train(meanMfcc)) {
+				return;
 			}
+
 		}
 		
 		machineLearning.saveClustersToFile(FILE_MODEL);

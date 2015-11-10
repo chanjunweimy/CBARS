@@ -9,7 +9,7 @@ import java.util.Vector;
 import SignalProcess.WavObj;
 import SignalProcess.WaveIO;
 import Training.KMeansClusteringTrainer;
-import Distance.Cosine;
+import Distance.Euclidean;
 import Feature.MFCC;
 
 public class KMeansClusteringClassifier {
@@ -24,8 +24,18 @@ public class KMeansClusteringClassifier {
 	public static final String EXT_GRUNDTRUTH = "_cat.txt";
 	public static final String AVG_GRUNDTRUTH = "_overall" + EXT_GRUNDTRUTH;
 	public static final String[] EVALUATORS = {"_e1", "_e2", "_e3", "_e4"};
-	public static final String[] EMOTIONS = {"Neutral state", "Fear", "Happiness", "Disgust", "Sadness",
-											 "Frustration", "Anger", "Excited", "Surprise", "Other"};
+	public static final String[] EMOTIONS = {
+		"excited",
+		"surprise",
+		"other",
+		"fear",
+		"happy",
+		"sad",
+		"frustration",
+		"angry",
+		"neutral",
+		"disgust"
+	};
 	public static final int INDEX_EMOTION_NOT_EXIST = 10;
 
 
@@ -75,7 +85,7 @@ public class KMeansClusteringClassifier {
 			return -1;
 		}
 		
-		Cosine cos = new Cosine();
+		Euclidean cos = Euclidean.getObject();
 		double minDistance = 0;
 		int chosenIndex = 0;
 		for (int i = 0; i < _k; i++) {
@@ -113,9 +123,54 @@ public class KMeansClusteringClassifier {
     		emotionIndex.put(EMOTIONS[i], i);
     	}
 		
-    	File trainingDir = new File(KMeansClusteringTrainer.DIR_TRAINING_FILES);
+    	File trainingDir = new File(DIR_TESTING_FILES);
 		File[] trainingFiles = trainingDir.listFiles();
-		showClusters(classifier, waveIO, mfcc, trainingFiles, emotionIndex);
+		//showClusters(classifier, waveIO, mfcc, trainingFiles, emotionIndex);
+		predictCluster(classifier, waveIO, mfcc, trainingFiles, emotionIndex);
+	}
+	
+	private static void predictCluster(KMeansClusteringClassifier classifier,
+			WaveIO waveIO, MFCC mfcc, File[] files, TreeMap<String, Integer> emotionIndex) {
+		int clusterToEmotion[][] = new int[classifier.getK()][EMOTIONS.length + 1];
+		for (int i = 0; i < clusterToEmotion.length; i++) {
+			for (int j = 0; j < clusterToEmotion[0].length; j++) {
+				clusterToEmotion[i][j] = 0;
+			}
+		}
+		
+		for (int i = 0; i < files.length; i++) {
+			String name = files[i].getName();
+			
+			WavObj waveObj = waveIO.constructWavObj(files[i].getAbsolutePath());
+			short[] signal = waveObj.getSignal();
+			mfcc.process(signal);//13-d mfcc
+			double[] meanMfcc = mfcc.getMeanFeature();
+			int index = classifier.calculateNearestCluster(meanMfcc);
+			
+			boolean isExist = false;
+			for (int j = 0; j < EMOTIONS.length; j++) {
+				if (name.endsWith(EMOTIONS[j] + ".wav")) {
+					isExist = true;
+					clusterToEmotion[index][j]++;
+				}
+			}
+			if (!isExist) {
+				clusterToEmotion[index][EMOTIONS.length]++;
+			}
+		}
+		
+		for (int i = 0; i < clusterToEmotion.length; i++) {
+			System.out.print("index: " + i + " ");
+
+			for (int j = 0; j < clusterToEmotion[0].length; j++) {
+				String emo = "Not exist";
+				if (j < INDEX_EMOTION_NOT_EXIST) {
+					emo = EMOTIONS[j];
+				}
+				System.out.print(emo + ": " + clusterToEmotion[i][j] + " ");
+			}
+			System.out.println("");
+		}
 	}
 
 	/**
@@ -124,7 +179,9 @@ public class KMeansClusteringClassifier {
 	 * @param mfcc
 	 * @param files
 	 * @param emotionIndex 
+	 * @deprecated
 	 */
+	@SuppressWarnings("unused")
 	private static void showClusters(KMeansClusteringClassifier classifier,
 			WaveIO waveIO, MFCC mfcc, File[] files, TreeMap<String, Integer> emotionIndex) {
 		int clusterToEmotion[][] = new int[classifier.getK()][EMOTIONS.length + 1];

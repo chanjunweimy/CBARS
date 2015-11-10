@@ -76,6 +76,8 @@ public class AudioFeaturesGenerator {
 			
 			
 			for (int j = 0; j < lines.size(); j++) {
+				System.out.println(j);
+				
 				String line = lines.get(j);
 				line = line.substring(1).replaceAll("\\s+", " ");
 				String[] tokens = line.split("]");
@@ -89,6 +91,11 @@ public class AudioFeaturesGenerator {
 								
 				short[] signal = obj.getSignalWithoutFirstFewSeconds(startTime);
 				signal = obj.getSignalWithFirstFewSeconds(endTime - startTime, signal);
+				signal = obj.trimSilence(signal);
+				
+				if (obj.isShort(signal)) {
+					continue;
+				}
 				
 				String displayName = audioFileName.replace(AudioFeaturesGenerator.EXT_WAV, 
 						"__" + j + "_" + emotions.get(emotion) + AudioFeaturesGenerator.EXT_WAV);
@@ -97,7 +104,7 @@ public class AudioFeaturesGenerator {
 				
 				if (emotion.equals("xxx")) {
 					continue;
-				}
+				} 
 				
 				MFCC mfcc = new MFCC();
 				mfcc.process(signal);
@@ -341,14 +348,13 @@ public class AudioFeaturesGenerator {
 
 		//trainAudio(featureGenerator);
 		//trainEmotion(featureGenerator);
-		//trainIemocapEmotion(featureGenerator);
-		trainIemocapSegmentedEmotion(featureGenerator);
+		trainIemocapEmotion(featureGenerator);
+		//trainIemocapSegmentedEmotion(featureGenerator);
 	}
 	
 	/**
 	 * @param featureGenerator
 	 */
-	@SuppressWarnings("unused")
 	private static void trainIemocapEmotion(AudioFeaturesGenerator featureGenerator) {
 		File emotionTrain = new File(KMeansClusteringTrainer.DIR_TRAINING_FILES);
 		File[] emotionFiles = emotionTrain.listFiles();

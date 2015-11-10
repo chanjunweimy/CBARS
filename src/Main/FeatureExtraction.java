@@ -27,12 +27,15 @@ public class FeatureExtraction {
 	 */
 	public static void testNewMfccMethod() {
 		WaveIO waveIO = new WaveIO();
-    	//WavObj waveObj = waveIO.constructWavObj("data/input/IEMOCAP_database/Ses01F_impro01.wav");
+    	WavObj waveObj = waveIO.constructWavObj("data/input/IEMOCAP_database/Ses01F_impro01.wav");
     	short[] signal = null;
-    	//signal = waveObj.getSignal();
-    	signal = waveIO.readWave("data/input/IEMOCAP_database/Ses01F_impro01.wav");
-    	//waveObj.removeSignalsWithinSeconds(1);
+    	signal = waveObj.getSignal();
+    	waveObj.removeSignalsWithinSeconds(1);
+    	signal = waveObj.getSignalWithFirstFewSeconds(10);	
+    	System.out.println(signal.length);
+    	signal = waveObj.trimSilence(signal);
     	waveIO.writeWave(signal, "data/input/test.wav");
+    	
 	}
 
 	/**
